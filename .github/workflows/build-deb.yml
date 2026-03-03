@@ -1,0 +1,53 @@
+name: Build & Release .deb
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Compile CLI binary
+        run: dart compile exe bin/genaisys_cli.dart -o genaisys
+
+      - name: Build .deb package
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}')
+          mkdir -p deb-root/usr/bin deb-root/DEBIAN
+          cp genaisys deb-root/usr/bin/genaisys
+          chmod 755 deb-root/usr/bin/genaisys
+          {
+            echo "Package: genaisys"
+            echo "Version: ${VERSION}"
+            echo "Architecture: amd64"
+            echo "Maintainer: Genaisys Contributors <noreply@genaisys.dev>"
+            echo "Description: Genaisys open-core orchestration engine for AI-assisted software delivery"
+          } > deb-root/DEBIAN/control
+          dpkg-deb --build deb-root "genaisys_${VERSION}_amd64.deb"
+          echo "DEB_NAME=genaisys_${VERSION}_amd64.deb" >> "$GITHUB_ENV"
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: genaisys-deb
+          path: '*.deb'
+          retention-days: 30
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: '*.deb'
+          generate_release_notes: true

@@ -1,0 +1,18 @@
+Genaisys — Third-Party Notices
+Copyright (c) 2026 Niko Pascal Burkert
+
+This product includes software developed by third parties:
+
+google_fonts        Apache 2.0   Copyright (c) 2019 The Flutter Authors
+yaml                BSD 3-Clause Copyright (c) 2012 Dart project authors
+yaml_edit           BSD 3-Clause Copyright (c) 2020 Dart project authors
+freezed_annotation  MIT          Copyright (c) 2020 Remi Rousselet
+json_annotation     BSD 3-Clause Copyright (c) 2017 Dart project authors
+window_manager      MIT          Copyright (c) 2021 leanflutter
+desktop_multi_window MIT         Copyright (c) 2022 leanflutter
+fl_chart            MIT          Copyright (c) 2019 ImaNNeoFighT
+phosphor_flutter    MIT          Copyright (c) 2021 Phosphor Icons
+flutter_markdown_plus MIT        Copyright (c) Flutter community
+file_selector       BSD 3-Clause Copyright (c) 2020 The Flutter Authors
+meta                BSD 3-Clause Copyright (c) 2012 Dart project authors
+cupertino_icons     MIT          Copyright (c) 2016 The Chromium Authors

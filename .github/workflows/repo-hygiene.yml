@@ -1,0 +1,30 @@
+name: Repo Hygiene
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  conflict-markers:
+    name: Detect Merge Conflict Markers
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fail on unresolved merge conflicts
+        run: |
+          if git grep -nE '^(<<<<<<<|=======|>>>>>>>)' -- .; then
+            echo "Found unresolved merge conflict markers."
+            exit 1
+          fi
+
+  cli-import-boundary:
+    name: Enforce Core CLI Import Boundary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check CLI import boundary
+        run: bash .github/scripts/check_cli_import_boundary.sh

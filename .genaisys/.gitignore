@@ -1,0 +1,9 @@
+RUN_LOG.jsonl
+STATE.json
+attempts/
+logs/
+task_specs/
+workspaces/
+locks/
+audit/
+evals/

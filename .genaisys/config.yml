@@ -1,0 +1,176 @@
+project:
+  name: "genaisys"
+  root: "."
+  user_locale: "en-US"
+  internal_language: "en"
+
+providers:
+  primary: "claude"
+  fallback: "claude"
+  pool:
+    - "claude@default"
+  quota_cooldown_seconds: 120
+  quota_pause_seconds: 60
+
+git:
+  base_branch: "main"
+  feature_prefix: "feat/"
+  auto_delete_remote_merged_branches: true
+  auto_stash: true
+  sync_between_loops: true
+  sync_strategy: "fetch_only"
+
+agents:
+  core:
+    enabled: true
+    system_prompt: "agent_contexts/core.md"
+  architecture:
+    enabled: false
+    system_prompt: "agent_contexts/architecture.md"
+  security:
+    enabled: false
+    system_prompt: "agent_contexts/security.md"
+  docs:
+    enabled: true
+    system_prompt: "agent_contexts/docs.md"
+  ui:
+    enabled: false
+    system_prompt: "agent_contexts/ui.md"
+  refactor:
+    enabled: true
+    system_prompt: "agent_contexts/refactor.md"
+  review:
+    enabled: true
+    system_prompt: "agent_contexts/review.md"
+
+policies:
+  safe_write:
+    enabled: true
+    roots:
+      - "lib"
+      - "test"
+      - "assets"
+      - "web"
+      - "android"
+      - "ios"
+      - "linux"
+      - "macos"
+      - "windows"
+      - "bin"
+      - "tool"
+      - "scripts"
+      - "docs"
+      - ".genaisys/agent_contexts"
+      - ".github"
+      - "README.md"
+      - "pubspec.yaml"
+      - "pubspec.lock"
+      - "analysis_options.yaml"
+  quality_gate:
+    enabled: true
+    timeout_seconds: 900
+    adaptive_by_diff: true
+    skip_tests_for_docs_only: true
+    prefer_dart_test_for_lib_dart_only: true
+    flake_retry_count: 1
+    commands:
+      - "dart format --output=none --set-exit-if-changed ."
+      - "dart analyze"
+      - "flutter test --no-pub"
+  shell_allowlist_profile: "standard"
+  shell_allowlist:
+    - "rg"
+    - "ls"
+    - "cat"
+    - "codex"
+    - "gemini"
+    - "claude"
+    - "git status"
+    - "git diff"
+    - "git log"
+    - "git show"
+    - "git branch"
+    - "git rev-parse"
+    - "flutter pub get"
+    - "flutter test"
+    - "dart test"
+    - "dart format"
+    - "dart analyze"
+  diff_budget:
+    max_files: 20
+    max_additions: 2000
+    max_deletions: 1500
+  timeouts:
+    # Keep unattended cycles snappy while avoiding borderline timeout requeue loops on scoped refactor slices.
+    agent_seconds: 360
+
+workflow:
+  require_review: true
+  auto_commit: true
+  auto_push: true
+  auto_merge: true
+  merge_strategy: "rebase_before_merge"
+  max_review_retries: 3
+
+autopilot:
+  selection_mode: "fair"
+  fairness_window: 12
+  priority_weight_p1: 3
+  priority_weight_p2: 2
+  priority_weight_p3: 1
+  reactivate_blocked: true
+  reactivate_failed: true
+  blocked_cooldown_seconds: 600
+  failed_cooldown_seconds: 60
+  min_open: 8
+  max_plan_add: 4
+  step_sleep_seconds: 2
+  idle_sleep_seconds: 30
+  max_failures: 5
+  max_task_retries: 3
+  lock_ttl_seconds: 600
+  no_progress_threshold: 6
+  stuck_cooldown_seconds: 60
+  self_restart: true
+  self_heal_enabled: true
+  self_heal_max_attempts: 3
+  planning_audit_enabled: true
+  planning_audit_cadence_steps: 12
+  planning_audit_max_add: 4
+  scope_max_files: 60
+  scope_max_additions: 6000
+  scope_max_deletions: 4500
+  approve_budget: 3
+  manual_override: false
+  overnight_unattended_enabled: true
+  self_tune_enabled: true
+  self_tune_window: 12
+  self_tune_min_samples: 4
+  self_tune_success_percent: 70
+  release_tag_on_ready: false
+  release_tag_push: false
+
+pipeline:
+  context_injection_enabled: true
+  context_injection_max_tokens: 8000
+
+review:
+  strictness: "standard"
+  max_rounds: 3
+  fresh_context: true
+
+reflection:
+  enabled: true
+  trigger_mode: "loop_count"
+  trigger_loop_count: 10
+  trigger_task_count: 5
+  trigger_hours: 4
+  min_samples: 5
+  max_optimization_tasks: 3
+  optimization_task_priority: "P2"
+  analysis_window_lines: 2000
+
+supervisor:
+  reflection_on_halt: true
+  max_interventions_per_hour: 5
+  check_interval_seconds: 30

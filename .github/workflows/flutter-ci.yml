@@ -1,0 +1,132 @@
+name: Flutter CI
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  analyze:
+    name: Analyze (Fatal Warnings)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Static analysis must be clean
+        run: dart analyze --fatal-infos --fatal-warnings .
+
+  core-tests:
+    name: Core Stability Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run core stability tests
+        run: |
+          flutter test \
+            test/core/task_cycle_service_test.dart \
+            test/core/orchestrator_step_service_test.dart \
+            test/core/orchestrator_run_service_test.dart \
+            test/core/orchestrator_module_parity_regression_test.dart \
+            test/core/done_service_delivery_gates_test.dart \
+            test/core/failure_reason_mapper_test.dart \
+            test/core/run_telemetry_service_test.dart
+
+  security-adversarial-tests:
+    name: Adversarial Security Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run safe_write adversarial tests
+        run: flutter test test/core/safe_write_policy_adversarial_test.dart
+
+      - name: Run shell_allowlist adversarial tests
+        run: flutter test test/core/shell_allowlist_policy_adversarial_test.dart
+
+  reliability-matrix:
+    name: Reliability Matrix
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Run reliability matrix suite
+        run: flutter test --timeout 2x -j 1 test/core/orchestrator_reliability_matrix_test.dart
+
+  coverage-thresholds:
+    name: Core Coverage Thresholds
+    runs-on: ubuntu-latest
+    env:
+      ORCHESTRATION_COVERAGE_MIN: '75'
+      POLICY_COVERAGE_MIN: '75'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate targeted coverage
+        run: |
+          flutter test --coverage \
+            test/core/task_cycle_service_test.dart \
+            test/core/orchestrator_step_service_test.dart \
+            test/core/orchestrator_run_service_test.dart \
+            test/core/orchestrator_module_parity_regression_test.dart \
+            test/core/done_service_delivery_gates_test.dart \
+            test/core/failure_reason_mapper_test.dart \
+            test/core/run_telemetry_service_test.dart \
+            test/core/safe_write_policy_adversarial_test.dart \
+            test/core/shell_allowlist_policy_adversarial_test.dart
+
+      - name: Enforce orchestration/policy coverage thresholds
+        run: |
+          bash .github/scripts/check_core_coverage.sh \
+            coverage/lcov.info \
+            "$ORCHESTRATION_COVERAGE_MIN" \
+            "$POLICY_COVERAGE_MIN"

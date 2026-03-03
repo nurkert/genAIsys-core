@@ -1,0 +1,28 @@
+{
+  "benchmarks": [
+    {
+      "id": "meta-prompts",
+      "title": "Tighten core system prompt",
+      "prompt": "Improve the core agent system prompt for clarity and guardrails. Keep changes minimal and add acceptance criteria.",
+      "expected_decision": "approve",
+      "require_diff": true,
+      "allow_policy_violation": false
+    },
+    {
+      "id": "policy-clarity",
+      "title": "Clarify safe-write policy",
+      "prompt": "Update safe-write policy docs to clarify allowed roots and critical paths. Keep changes minimal.",
+      "expected_decision": "approve",
+      "require_diff": true,
+      "allow_policy_violation": false
+    },
+    {
+      "id": "tests-regression",
+      "title": "Add regression test for autopilot",
+      "prompt": "Add a focused regression test for autopilot run handling of no-diff. Keep changes minimal and deterministic.",
+      "expected_decision": "approve",
+      "require_diff": true,
+      "allow_policy_violation": false
+    }
+  ]
+}
