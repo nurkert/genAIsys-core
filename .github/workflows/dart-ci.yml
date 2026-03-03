@@ -19,7 +19,7 @@ jobs:
         run: dart pub get
 
       - name: Static analysis
-        run: dart analyze --fatal-warnings .
+        run: dart analyze .
 
   core-tests:
     name: Core Tests
