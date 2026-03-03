@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:genaisys/core/services/step_schema_validation_service.dart';
 
 import '../support/test_workspace.dart';

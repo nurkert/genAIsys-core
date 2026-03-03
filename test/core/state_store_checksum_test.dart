@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:genaisys/core/models/active_task_state.dart';
 import 'package:genaisys/core/models/autopilot_run_state.dart';
 import 'package:genaisys/core/storage/state_store.dart';

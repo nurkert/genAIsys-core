@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'package:genaisys/core/errors/operation_errors.dart';
 import 'package:genaisys/core/policy/diff_budget_policy.dart';

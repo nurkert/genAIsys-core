@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:genaisys/core/agents/agent_runner.dart';
 import 'package:genaisys/core/config/project_type.dart';
 import 'package:genaisys/core/project_initializer.dart';

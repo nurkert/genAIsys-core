@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'package:genaisys/core/policy/diff_budget_policy.dart';
 import 'package:genaisys/core/services/eval_harness_service.dart';

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'package:genaisys/core/app/contracts/app_error.dart';
 import 'package:genaisys/core/app/use_cases/in_process_genaisys_api.dart';

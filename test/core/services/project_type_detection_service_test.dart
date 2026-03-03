@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:genaisys/core/config/project_type.dart';
 import 'package:genaisys/core/services/project_type_detection_service.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 void main() {
   late Directory tempDir;

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:genaisys/core/project_initializer.dart';
 import 'package:genaisys/core/project_layout.dart';
 import 'package:genaisys/core/services/autopilot/autopilot_self_heal_service.dart';

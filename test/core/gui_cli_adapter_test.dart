@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'package:genaisys/core/cli/cli_client.dart';
 import 'package:genaisys/core/cli/cli_exit_status.dart';

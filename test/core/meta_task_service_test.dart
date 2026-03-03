@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'package:genaisys/core/services/meta_task_service.dart';
 import 'package:genaisys/core/storage/task_store.dart';

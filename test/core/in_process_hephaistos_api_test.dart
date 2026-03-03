@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'package:genaisys/core/app/app.dart';
 import 'package:genaisys/core/services/task_cycle_service.dart';

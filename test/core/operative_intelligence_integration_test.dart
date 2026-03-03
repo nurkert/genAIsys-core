@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'package:genaisys/core/services/architecture_context_service.dart';
 import 'package:genaisys/core/services/observability/architecture_health_service.dart';

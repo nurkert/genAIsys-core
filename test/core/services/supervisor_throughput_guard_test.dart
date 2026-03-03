@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:genaisys/core/models/supervisor_state.dart';
 import 'package:genaisys/core/services/orchestrator_run_service.dart';
 import 'package:genaisys/core/services/supervisor_throughput_guard.dart';

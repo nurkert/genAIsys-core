@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'package:genaisys/core/config/project_config.dart';
 import 'package:genaisys/core/services/planning_audit_cadence_service.dart';

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:genaisys/core/models/active_task_state.dart';
 import 'package:genaisys/core/project_initializer.dart';
 import 'package:genaisys/core/project_layout.dart';

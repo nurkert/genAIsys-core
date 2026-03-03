@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'package:genaisys/core/app/app.dart';
 import 'package:genaisys/core/gui/gui_spec_artifacts_use_case.dart';

@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:genaisys/core/config/config_field_descriptor.dart';
 import 'package:genaisys/core/config/config_field_registry.dart';
 import 'package:genaisys/core/config/project_config.dart';

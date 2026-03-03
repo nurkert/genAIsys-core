@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:genaisys/core/config/project_type.dart';
 import 'package:genaisys/core/config/quality_gate_profile.dart';
 import 'package:genaisys/core/services/init_service.dart';

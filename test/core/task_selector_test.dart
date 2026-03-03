@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'package:genaisys/core/core.dart';
 import 'package:genaisys/core/selection/task_selection_context.dart';

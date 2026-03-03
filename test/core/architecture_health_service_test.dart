@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'package:genaisys/core/services/observability/architecture_health_service.dart';
 import 'package:genaisys/core/services/import_graph_service.dart';

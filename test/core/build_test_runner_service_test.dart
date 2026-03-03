@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'package:genaisys/core/project_initializer.dart';
 import 'package:genaisys/core/project_layout.dart';
@@ -461,15 +461,15 @@ policies:
       final testCoreDir = Directory('$root/test/core')
         ..createSync(recursive: true);
       File('${testCoreDir.path}/cli_tasks_json_test.dart').writeAsStringSync(
-        'import "package:flutter_test/flutter_test.dart";\n'
+        'import "package:test/test.dart";\n'
         'void main() { test("cli", () => expect(1, 1)); }\n',
       );
       File('${testCoreDir.path}/cli_status_json_test.dart').writeAsStringSync(
-        'import "package:flutter_test/flutter_test.dart";\n'
+        'import "package:test/test.dart";\n'
         'void main() { test("status", () => expect(1, 1)); }\n',
       );
       File('${testCoreDir.path}/task_store_test.dart').writeAsStringSync(
-        'import "package:flutter_test/flutter_test.dart";\n'
+        'import "package:test/test.dart";\n'
         'void main() { test("task-store", () => expect(1, 1)); }\n',
       );
 
@@ -521,11 +521,11 @@ policies:
       final testCoreDir = Directory('$root/test/core')
         ..createSync(recursive: true);
       File('${testCoreDir.path}/a_test.dart').writeAsStringSync(
-        'import "package:flutter_test/flutter_test.dart";\n'
+        'import "package:test/test.dart";\n'
         'void main() { test("a", () => expect(1, 1)); }\n',
       );
       File('${testCoreDir.path}/b_test.dart').writeAsStringSync(
-        'import "package:flutter_test/flutter_test.dart";\n'
+        'import "package:test/test.dart";\n'
         'void main() { test("b", () => expect(1, 1)); }\n',
       );
 
@@ -577,7 +577,7 @@ policies:
       final testCoreDir = Directory('$root/test/core')
         ..createSync(recursive: true);
       File('${testCoreDir.path}/a_test.dart').writeAsStringSync(
-        'import "package:flutter_test/flutter_test.dart";\n'
+        'import "package:test/test.dart";\n'
         'void main() { test("a", () => expect(1, 1)); }\n',
       );
       final testSupportDir = Directory('$root/test/core/support')
@@ -638,7 +638,7 @@ policies:
       final testCoreDir = Directory('$root/test/core')
         ..createSync(recursive: true);
       File('${testCoreDir.path}/a_test.dart').writeAsStringSync(
-        'import "package:flutter_test/flutter_test.dart";\n'
+        'import "package:test/test.dart";\n'
         'void main() { test("a", () => expect(1, 1)); }\n',
       );
       final libCoreDir = Directory('$root/lib/core')

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import 'package:genaisys/core/cli/models/cli_models.dart';
 import 'package:genaisys/core/models/workflow_stage.dart';
