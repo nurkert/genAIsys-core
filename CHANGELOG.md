@@ -31,9 +31,10 @@ jobs failed:
   measured scope takes it to 91.6%; the threshold is unchanged, because the gate was right and
   the file list was wrong. Orchestration was already at 85.3%.
 
-**Note**: the workflow logs are only readable with admin rights on the repository, so the two
-diagnoses above are reasoned from the tree rather than confirmed from a log. The next public run
-will show whether they hold.
+All ten jobs across both workflows pass on the next public snapshot. The workflow logs are only
+readable with admin rights, so the analyzer diagnosis was reasoned from the tree rather than read
+from a log — the green run confirms it, since pinning the SDK was the only change affecting that
+job's inputs.
 
 ---
 
