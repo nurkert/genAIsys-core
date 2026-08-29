@@ -12,7 +12,7 @@ import 'workspaces/autopilot_workspace_view.dart';
 import 'workspaces/backlog_workspace_view.dart';
 import 'workspaces/chat_workspace_view.dart';
 import 'workspaces/dashboard_workspace_view.dart';
-import 'workspaces/project_settings_workspace_view.dart';
+import 'workspaces/settings_workspace_view.dart';
 import 'workspaces/reports_workspace_view.dart';
 
 /// Manages workspace views with an [IndexedStack] so that switching tabs
@@ -122,7 +122,7 @@ class _MainContentPanelState extends State<MainContentPanel> {
           topCornerRadius: widget.topCornerRadius,
           leftSidebarVisible: widget.leftSidebarVisible,
           rightSidebarVisible: widget.rightSidebarVisible,
-          child: ProjectSettingsWorkspaceView(controller: widget.controller),
+          child: SettingsWorkspaceView(controller: widget.controller),
         );
     }
   }

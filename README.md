@@ -324,6 +324,24 @@ genaisys health .             # detailed health diagnostic report
 genaisys diagnostics .        # error pattern analysis
 ```
 
+### Desktop App
+
+The desktop app is a full controller for the engine, not a viewer bolted onto it. It talks to the
+same application boundary the CLI uses, so anything you can drive from the terminal you can drive
+from the app — and neither depends on the other.
+
+- **Complete settings** — every configuration key the engine reads is listed, explained, grouped
+  by area, and searchable across groups. Changes apply immediately and are validated by the
+  engine; a rejected value is refused with a reason and nothing is written
+- **Comment-preserving writes** — the app edits `config.yml` with a YAML editor, so hand-written
+  comments and formatting survive a change made in the GUI
+- **Restore to default** — per setting or for everything currently in view, with a marker showing
+  what differs from the shipped default
+- **Audit trail** — settings changes land in `RUN_LOG.jsonl` like every other decision
+
+The settings surface is generated from the config field registry, so it stays complete as the
+engine grows: registering a new key makes it appear in the app with no UI work.
+
 ### Orchestrated Init Pipeline
 
 Initialize any project from a document, not just from scratch.

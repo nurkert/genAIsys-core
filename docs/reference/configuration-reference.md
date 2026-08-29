@@ -25,6 +25,7 @@ All fields are parsed from the [config field registry](../../lib/core/config/con
 - [Supervisor](#supervisor)
 - [Code Health](#code_health)
 - [Vision Evaluation](#vision_evaluation)
+- [Additional Registry Keys](#additional-registry-keys)
 - [Non-Registry Fields](#non-registry-fields)
 - [Presets](#presets)
 - [Related Documentation](#related-documentation)
@@ -417,6 +418,35 @@ These fields are parsed by specialized section parsers and do not appear in the 
 | `agents.<name>.role` | string | _(required)_ | Agent role identifier for profile-based invocation. |
 
 Agent profiles are defined as named objects under the `agents:` section. Each profile can override provider, timeout, and prompt settings.
+
+---
+
+## Additional Registry Keys
+
+Keys present in the [config field registry](../../lib/core/config/config_field_registry.dart)
+that are not covered by a section above. Defaults are the registry defaults; the settings UI
+shows the effective value for your project.
+
+| Key | Type | Default | Range | Description |
+|-----|------|---------|-------|-------------|
+| `autopilot.preflight_repair_threshold` | int | _(registry default)_ | >= 1 | Consecutive preflight failures before autopilot attempts an automatic state repair. |
+| `autopilot.max_preflight_repair_attempts` | int | _(registry default)_ | >= 0 | Repair attempts allowed before autopilot stops with a safety halt instead of retrying. |
+| `autopilot.lock_heartbeat_halt_threshold` | int | _(registry default)_ | >= 0 | Consecutive lock-heartbeat write failures before autopilot halts. 0 disables the halt. |
+| `pipeline.subtask_refinement_enabled` | bool | _(registry default)_ | — | Let the spec agent refine a subtask before coding starts. |
+| `pipeline.subtask_feasibility_enabled` | bool | _(registry default)_ | — | Have the spec agent judge whether a subtask is feasible as written before coding starts. |
+| `pipeline.ac_self_check_enabled` | bool | _(registry default)_ | — | Make the coding agent check its own work against the acceptance criteria before review. |
+| `pipeline.subtask_commit_enabled` | bool | _(registry default)_ | — | Commit after each subtask instead of only at the end of the task. |
+| `pipeline.subtask_forced_narrowing_max_size` | int | _(registry default)_ | >= 1 | Subtask size above which a repeatedly failing task is force-narrowed. 0 disables narrowing. |
+| `autopilot.adaptive_sleep_enabled` | bool | _(registry default)_ | — | Back off progressively after consecutive failures instead of retrying at the fixed step interval. |
+| `autopilot.adaptive_sleep_max_multiplier` | int | _(registry default)_ | >= 1 | Upper bound on adaptive back-off, as a multiple of the step sleep. Never exceeds the idle sleep. |
+| `autopilot.task_dependencies_enabled` | bool | _(registry default)_ | — | Skip tasks whose declared dependencies are not done yet and move on to the next candidate. |
+| `autopilot.vision_drift_check_enabled` | bool | _(registry default)_ | — | Reserved for the planned vision-drift check. No pipeline stage reads it yet. |
+| `autopilot.vision_drift_check_interval` | int | _(registry default)_ | >= 1 | Reserved for the planned vision-drift check. No pipeline stage reads it yet. |
+| `pipeline.test_delta_gate_enabled` | bool | _(registry default)_ | — | Require a behaviour change to come with a test change before it can pass the gate. |
+| `pipeline.lessons_learned_enabled` | bool | _(registry default)_ | — | Feed previously recorded lessons into agent prompts. |
+| `pipeline.lessons_learned_max_lines` | int | _(registry default)_ | — | Entries kept in the lessons-learned file; older entries are rotated out. |
+| `pipeline.final_ac_check_enabled` | bool | _(registry default)_ | — | Verify the acceptance criteria one final time before a task is marked done. |
+| `review.diff_delta_enabled` | bool | _(registry default)_ | — | Show the review agent only what changed since its previous round, instead of the full diff. |
 
 ---
 

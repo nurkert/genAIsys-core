@@ -397,7 +397,45 @@ Changes to imports must pass:
 
 ---
 
-## 10. Anti-Patterns to Avoid
+## 10. Settings Are Generated, Not Hand-Built
+
+**Do not add a form field for a new config key.** The settings surface is generated from
+`configFieldRegistry` through `ConfigRegistryService` and `GenaisysApi.getConfigSchema`.
+
+```
+config_field_registry.dart   (one ConfigFieldDescriptor per key)
+        │
+        ▼
+ConfigRegistryService        read / validate / write any key by qualified key
+        │
+        ▼
+getConfigSchema  ──►  ConfigSchemaDto (label, description, control, range, default, isModified)
+        │
+        ▼
+ConfigSettingsController  ──►  ConfigSettingsView  ──►  ConfigSettingRow
+```
+
+Adding a `ConfigFieldDescriptor` is enough: the key becomes visible, searchable, validated, and
+editable, with the control picked from its declared type
+(`bool_` → switch, `string_` + `validValues` → dropdown, numeric/duration → text field).
+
+Two rules follow from this:
+
+| Do | Don't |
+|----|-------|
+| Add a `description` to the descriptor | Leave it null — the row then shows a raw key like `autopilot.max_steps` |
+| Extend `ConfigFieldControl` + `ConfigSettingRow` for a genuinely new *kind* of input | Add a bespoke widget for one specific key |
+
+`AppConfigDto` is the legacy hand-maintained path. It survives only for the list-valued settings
+(safe-write roots, shell allowlist) that the scalar registry cannot express, edited under the
+*Paths & allowlist* tab. Do not add new scalar keys to it.
+
+**Interaction contract:** settings apply on change; there is no save button. A rejected value
+rolls back to what is on disk and explains itself inline on the row.
+
+---
+
+## 11. Anti-Patterns to Avoid
 
 | Anti-Pattern | Why It Is Wrong | Do This Instead |
 |--------------|-----------------|-----------------|
@@ -411,10 +449,11 @@ Changes to imports must pass:
 | Rebuilding entire shell on tab switch | Performance waste | `IndexedStack` + lazy building |
 | `Process.runSync` on UI thread | Freezes UI for 300-700ms | Background `Isolate` |
 | Creating new gradient per frame | Expensive + flickering | `bronzeGradientFor(seed)` with stable seed |
+| Hand-writing a form field for a config key | Invisible until someone plumbs it; does not scale | Add a `ConfigFieldDescriptor`; the settings UI generates it |
 
 ---
 
-## 11. Quick Reference: File Locations
+## 12. Quick Reference: File Locations
 
 | I want to... | Go to... |
 |---------------|----------|
@@ -431,10 +470,12 @@ Changes to imports must pass:
 | Add shell-level state | `lib/ui/desktop/controllers/desktop_shell_controller.dart` |
 | Add heavy background work | `lib/ui/desktop/controllers/background_api_runner.dart` |
 | Modify shell layout | `lib/ui/desktop/widgets/shell/desktop_scaffold.dart` |
+| Expose a new config setting | `lib/core/config/config_field_registry.dart` — the GUI generates it |
+| Add a new *kind* of settings input | `ConfigFieldControl` + `config_setting_row.dart` |
 
 ---
 
-## 12. PR Checklist for GUI Changes
+## 13. PR Checklist for GUI Changes
 
 Before submitting any GUI PR, confirm every item:
 
@@ -450,6 +491,7 @@ Before submitting any GUI PR, confirm every item:
 - [ ] No blocking I/O on the UI thread
 - [ ] `RepaintBoundary` used around frequently-animated components
 - [ ] Token changes documented in this guide or `ui_design_system_standards.md`
+- [ ] New config keys added to the registry with a `description` — never as a hand-written form field
 
 ---
 

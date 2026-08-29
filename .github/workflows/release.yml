@@ -14,6 +14,12 @@ permissions:
 
 env:
   FLUTTER_CHANNEL: stable
+  # Pinned deliberately. `channel: stable` floats, and a new SDK can change what
+  # builds or what the analyzer reports without any code change — the CI
+  # determinism rule forbids that, and release artifacts must be reproducible.
+  # Bump this in its own delivery, verified locally first.
+  # See docs/contributing/releasing.md.
+  FLUTTER_VERSION: '3.44.8'
 
 jobs:
   version:
@@ -54,6 +60,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Install Linux desktop toolchain
@@ -148,6 +155,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Install dependencies
@@ -188,6 +196,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Install dependencies

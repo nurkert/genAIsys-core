@@ -8,6 +8,7 @@ export 'contracts/genaisys_api.dart';
 export 'dto/action_dto.dart';
 export 'dto/autopilot_dto.dart';
 export 'dto/config_dto.dart';
+export 'dto/config_schema_dto.dart';
 export 'dto/dashboard_dto.dart';
 export 'dto/hitl_gate_dto.dart';
 export 'dto/run_log_dto.dart';

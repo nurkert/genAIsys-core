@@ -6,6 +6,7 @@ import '../../models/health_snapshot.dart';
 import '../../models/run_log_event.dart';
 import '../../models/task.dart';
 import '../../project_layout.dart';
+import '../../config/config_registry_service.dart';
 import '../../config/project_config.dart';
 import '../../services/task_management/activate_service.dart';
 import '../../services/cycle_service.dart';
@@ -29,6 +30,7 @@ import '../../models/hitl_gate.dart';
 import '../../services/hitl_gate_service.dart';
 import '../dto/action_dto.dart';
 import '../dto/config_dto.dart';
+import '../dto/config_schema_dto.dart';
 import '../dto/dashboard_dto.dart';
 import '../dto/hitl_gate_dto.dart';
 import '../dto/review_status_dto.dart';
@@ -36,6 +38,7 @@ import '../dto/status_snapshot_dto.dart';
 import '../dto/telemetry_dto.dart';
 import '../dto/task_dto.dart';
 import '../shared/app_error_mapper.dart';
+import '../shared/config_schema_mapper.dart';
 
 part 'in_process_genaisys_api_spec_review_helpers.dart';
 part 'in_process_genaisys_api_mapping_helpers.dart';
@@ -54,6 +57,7 @@ class InProcessGenaisysApi implements GenaisysApi {
     SpecService? specService,
     TaskWriteService? taskWriteService,
     TaskRefinementService? taskRefinementService,
+    ConfigRegistryService? configRegistryService,
   }) : _initService = initService ?? InitService(),
        _statusService = statusService ?? StatusService(),
        _taskService = taskService ?? TaskService(),
@@ -66,7 +70,9 @@ class InProcessGenaisysApi implements GenaisysApi {
        _specService = specService ?? SpecService(),
        _taskWriteService = taskWriteService ?? TaskWriteService(),
        _taskRefinementService =
-           taskRefinementService ?? TaskRefinementService();
+           taskRefinementService ?? TaskRefinementService(),
+       _configRegistryService =
+           configRegistryService ?? ConfigRegistryService();
 
   final InitService _initService;
   final StatusService _statusService;
@@ -74,6 +80,8 @@ class InProcessGenaisysApi implements GenaisysApi {
   final ReviewService _reviewService;
   final ActivateService _activateService;
   final ConfigService _configService;
+  final ConfigRegistryService _configRegistryService;
+  static const ConfigSchemaMapper _configSchemaMapper = ConfigSchemaMapper();
   final DoneService _doneService;
   final CycleService _cycleService;
   final TaskCycleService _taskCycleService;
@@ -272,6 +280,86 @@ class InProcessGenaisysApi implements GenaisysApi {
     } catch (error, stackTrace) {
       return AppResult.failure(_mapError(error, stackTrace));
     }
+  }
+
+  @override
+  Future<AppResult<ConfigSchemaDto>> getConfigSchema(String projectRoot) async {
+    try {
+      if (!_configRegistryService.hasConfigFile(projectRoot)) {
+        return AppResult.failure(
+          AppError.notFound(
+            'This project has no .genaisys/config.yml to edit.',
+          ),
+        );
+      }
+      final values = _configRegistryService.readValues(projectRoot);
+      return AppResult.success(
+        _configSchemaMapper.buildSchema(
+          descriptors: _configRegistryService.fields,
+          values: values,
+        ),
+      );
+    } catch (error, stackTrace) {
+      return AppResult.failure(_mapError(error, stackTrace));
+    }
+  }
+
+  @override
+  Future<AppResult<ConfigWriteResultDto>> setConfigValues(
+    String projectRoot, {
+    required Map<String, Object?> values,
+  }) async {
+    try {
+      final changed = _configRegistryService.writeValues(projectRoot, values);
+      _logConfigWrite(projectRoot, changed);
+      return AppResult.success(ConfigWriteResultDto(changedKeys: changed));
+    } on ConfigValidationException catch (error) {
+      return AppResult.failure(
+        AppError.invalidInput(
+          error.errors.map((e) => e.toString()).join('\n'),
+          cause: error,
+        ),
+      );
+    } catch (error, stackTrace) {
+      return AppResult.failure(_mapError(error, stackTrace));
+    }
+  }
+
+  @override
+  Future<AppResult<ConfigWriteResultDto>> resetConfigValues(
+    String projectRoot, {
+    required List<String> qualifiedKeys,
+  }) async {
+    try {
+      final changed = _configRegistryService.resetToDefaults(
+        projectRoot,
+        qualifiedKeys,
+      );
+      _logConfigWrite(projectRoot, changed);
+      return AppResult.success(ConfigWriteResultDto(changedKeys: changed));
+    } on ConfigValidationException catch (error) {
+      return AppResult.failure(
+        AppError.invalidInput(
+          error.errors.map((e) => e.toString()).join('\n'),
+          cause: error,
+        ),
+      );
+    } catch (error, stackTrace) {
+      return AppResult.failure(_mapError(error, stackTrace));
+    }
+  }
+
+  /// Settings changes are audit-relevant: they alter safety budgets and gate
+  /// behaviour, so every write leaves run-log evidence of which keys moved.
+  void _logConfigWrite(String projectRoot, Set<String> changedKeys) {
+    if (changedKeys.isEmpty) {
+      return;
+    }
+    RunLogStore(ProjectLayout(projectRoot).runLogPath).append(
+      event: 'config_updated',
+      message: 'Updated ${changedKeys.length} config setting(s)',
+      data: {'root': projectRoot, 'keys': changedKeys.toList()..sort()},
+    );
   }
 
   @override

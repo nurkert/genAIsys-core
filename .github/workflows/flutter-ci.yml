@@ -4,6 +4,13 @@ on:
   pull_request:
   push:
 
+env:
+  # Pinned deliberately. `channel: stable` floats, and with --fatal-infos a new
+  # SDK's new lints turn CI red without any code change — the CI determinism
+  # rule forbids that. Bump this in its own delivery, verified locally first.
+  # See docs/contributing/releasing.md.
+  FLUTTER_VERSION: '3.44.8'
+
 jobs:
   analyze:
     name: Analyze (Fatal Warnings)
@@ -16,6 +23,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Install dependencies
@@ -35,6 +43,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Install Linux desktop toolchain
@@ -67,6 +76,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Install dependencies
@@ -86,6 +96,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Install dependencies
@@ -113,6 +124,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Install dependencies
@@ -135,6 +147,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Install dependencies
@@ -157,11 +170,16 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
           cache: true
 
       - name: Install dependencies
         run: flutter pub get
 
+      # The file list must cover every source file the thresholds measure.
+      # It previously omitted the tests for language_policy (0% measured),
+      # interaction_parity_policy (6%) and redaction_service (62%), so the
+      # policy scope could never reach its own threshold.
       - name: Generate targeted coverage
         run: |
           flutter test --coverage \
@@ -173,7 +191,13 @@ jobs:
             test/core/failure_reason_mapper_test.dart \
             test/core/run_telemetry_service_test.dart \
             test/core/safe_write_policy_adversarial_test.dart \
-            test/core/shell_allowlist_policy_adversarial_test.dart
+            test/core/shell_allowlist_policy_adversarial_test.dart \
+            test/core/safe_write_policy_test.dart \
+            test/core/shell_allowlist_policy_test.dart \
+            test/core/diff_budget_policy_test.dart \
+            test/core/language_policy_test.dart \
+            test/core/redaction_service_test.dart \
+            test/core/cli_activate_parity_policy_test.dart
 
       - name: Enforce orchestration/policy coverage thresholds
         run: |

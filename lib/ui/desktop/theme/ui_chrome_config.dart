@@ -125,4 +125,22 @@ class UiChromeConfig {
     }
     return topBarHorizontalInsetDesktop;
   }
+
+  // ── Settings surface ──────────────────────────────────────────────────
+  /// Width of the settings group rail.
+  static const double settingsGroupRailWidth = 176;
+
+  /// Below this content width the group rail is replaced by a dropdown, so the
+  /// setting rows keep enough room for their controls.
+  static const double settingsRailBreakpoint = 760;
+
+  /// Below this row width a setting's control moves onto its own line.
+  static const double settingsRowStackBreakpoint = 460;
+
+  static const double settingsControlWidth = 190;
+  static const double settingsNumericControlWidth = 130;
+
+  /// Reserved width for the per-setting restore button, kept even when the
+  /// button is absent so controls stay on one vertical line.
+  static const double settingsResetSlotWidth = 32;
 }

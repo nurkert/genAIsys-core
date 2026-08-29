@@ -105,6 +105,19 @@ typedef SpecInitHandler =
       bool overwrite,
     });
 
+typedef ConfigSchemaHandler =
+    Future<AppResult<ConfigSchemaDto>> Function(String projectRoot);
+typedef SetConfigValuesHandler =
+    Future<AppResult<ConfigWriteResultDto>> Function(
+      String projectRoot, {
+      required Map<String, Object?> values,
+    });
+typedef ResetConfigValuesHandler =
+    Future<AppResult<ConfigWriteResultDto>> Function(
+      String projectRoot, {
+      required List<String> qualifiedKeys,
+    });
+
 class FakeGenaisysApi implements GenaisysApi {
   InitProjectHandler? initializeProjectHandler;
   // Captures the last fromSource / staticMode values passed to initializeProject
@@ -118,6 +131,9 @@ class FakeGenaisysApi implements GenaisysApi {
   DashboardHandler? getDashboardHandler;
   GetConfigHandler? getConfigHandler;
   UpdateConfigHandler? updateConfigHandler;
+  ConfigSchemaHandler? getConfigSchemaHandler;
+  SetConfigValuesHandler? setConfigValuesHandler;
+  ResetConfigValuesHandler? resetConfigValuesHandler;
   ActivateHandler? activateTaskHandler;
   DeactivateHandler? deactivateTaskHandler;
   ReviewDecisionHandler? approveReviewHandler;
@@ -135,12 +151,14 @@ class FakeGenaisysApi implements GenaisysApi {
   SpecInitHandler? initializePlanHandler;
   SpecInitHandler? initializeSpecHandler;
   SpecInitHandler? initializeSubtasksHandler;
-  Future<AppResult<HitlGateDto>> Function(String projectRoot)? getHitlGateHandler;
+  Future<AppResult<HitlGateDto>> Function(String projectRoot)?
+  getHitlGateHandler;
   Future<AppResult<void>> Function(
     String projectRoot, {
     required String decision,
     String? note,
-  })? submitHitlDecisionHandler;
+  })?
+  submitHitlDecisionHandler;
 
   @override
   Future<AppResult<ProjectInitializationDto>> initializeProject(
@@ -217,6 +235,39 @@ class FakeGenaisysApi implements GenaisysApi {
       throw UnimplementedError('getConfigHandler not configured');
     }
     return handler(projectRoot);
+  }
+
+  @override
+  Future<AppResult<ConfigSchemaDto>> getConfigSchema(String projectRoot) {
+    final handler = getConfigSchemaHandler;
+    if (handler == null) {
+      throw UnimplementedError('getConfigSchemaHandler not configured');
+    }
+    return handler(projectRoot);
+  }
+
+  @override
+  Future<AppResult<ConfigWriteResultDto>> setConfigValues(
+    String projectRoot, {
+    required Map<String, Object?> values,
+  }) {
+    final handler = setConfigValuesHandler;
+    if (handler == null) {
+      throw UnimplementedError('setConfigValuesHandler not configured');
+    }
+    return handler(projectRoot, values: values);
+  }
+
+  @override
+  Future<AppResult<ConfigWriteResultDto>> resetConfigValues(
+    String projectRoot, {
+    required List<String> qualifiedKeys,
+  }) {
+    final handler = resetConfigValuesHandler;
+    if (handler == null) {
+      throw UnimplementedError('resetConfigValuesHandler not configured');
+    }
+    return handler(projectRoot, qualifiedKeys: qualifiedKeys);
   }
 
   @override
@@ -459,9 +510,7 @@ class FakeGenaisysApi implements GenaisysApi {
   Future<AppResult<HitlGateDto>> getHitlGate(String projectRoot) {
     final handler = getHitlGateHandler;
     if (handler == null) {
-      return Future.value(
-        AppResult.success(const HitlGateDto(pending: false)),
-      );
+      return Future.value(AppResult.success(const HitlGateDto(pending: false)));
     }
     return handler(projectRoot);
   }

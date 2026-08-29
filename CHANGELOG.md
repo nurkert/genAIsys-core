@@ -6,6 +6,94 @@ All notable changes to Genaisys are documented here. This project follows [Seman
 
 ## [Unreleased] — Phase 2 Active
 
+### 2026-08-29 — Public CI Made Honest
+
+Publishing the full product made the public repository's CI meaningful for the first time —
+`flutter-ci.yml` had never actually run anywhere, because it was filtered out of the mirror.
+The first public run was red.
+
+**The GUI build and widget-test jobs added in this cycle passed**, confirming
+`flutter build linux --release` and the CLI build script work on a clean runner. Three other
+jobs failed:
+
+- **CLI import boundary** — the guard required `ripgrep` and exited 2 when the runner did not
+  ship it, so it had been failing on every public run. Rewritten on `git grep`, which is always
+  present. It was also silently ineffective: a negative control showed its pathspec never
+  matched, so a real violation would have passed. Both are fixed, and the guard is now verified
+  against a deliberately planted violation.
+- **Analyze (fatal infos)** — CI resolved `channel: stable` to Flutter 3.47.2 while the project
+  is developed and verified on 3.44.8. With `--fatal-infos`, a new SDK's new lints turn CI red
+  without any code change. Both workflows now pin `FLUTTER_VERSION`, and
+  `docs/contributing/releasing.md` documents how to bump it as its own delivery.
+- **Core coverage thresholds** — the job measured `lib/core/policy/` and the redaction service
+  but did not run the tests that cover them, so the policy scope sat at 66.8% against its own
+  75% floor and could never have passed. Adding the six existing test files that cover the
+  measured scope takes it to 91.6%; the threshold is unchanged, because the gate was right and
+  the file list was wrong. Orchestration was already at 85.3%.
+
+**Note**: the workflow logs are only readable with admin rights on the repository, so the two
+diagnoses above are reasoned from the tree rather than confirmed from a log. The next public run
+will show whether they hold.
+
+---
+
+### 2026-08-29 — Complete, Registry-Driven Settings
+
+**The GUI could only reach 43 of 144 config keys.** `AppConfigDto` was a hand-maintained
+subset, so every new config key needed manual plumbing through the DTO, the update path, and a
+bespoke form field before the GUI could show it — and until someone did that work, the setting
+was invisible and uncontrollable from the app.
+
+Settings are now generated from `configFieldRegistry`, the same source of truth the parser and
+schema validator already use. Registering a `ConfigFieldDescriptor` is now sufficient: the key
+becomes readable, validatable, searchable, and editable in the GUI with no further work.
+
+**Core**
+- `ConfigRegistryService`: generic read/validate/write for every scalar config key, driven by
+  the registry. Writes go through `YamlEditor`, so comments and formatting in `config.yml`
+  survive an edit
+- Writes are fail-closed and atomic — one invalid value rejects the whole batch and leaves the
+  file untouched — with machine-readable `ConfigValueErrorKind` per rejection
+- Reads degrade safely: an absent file, a missing key, or a stored value of the wrong type all
+  fall back to the registered default rather than surfacing a corrupt value
+
+**App boundary**
+- `getConfigSchema`, `setConfigValues`, `resetConfigValues` on `GenaisysApi`, with
+  `ConfigSchemaDto` / `ConfigFieldDto` describing each setting: label, description, control
+  type, choices, range, default, and whether it differs from that default
+- Control type is derived from the declared field type, so a new key renders correctly without
+  anyone writing a widget for it
+- Every settings write leaves run-log evidence (`config_updated`) naming the keys that moved;
+  settings alter safety budgets and gate behaviour, so they are audit-relevant
+
+**GUI**
+- New settings surface covering all 144 keys: a group rail for one area at a time, and a search
+  that spans every group so a setting can be found without knowing where it lives
+- Changes apply immediately — no save step to forget. A rejected value rolls back to what is on
+  disk and explains itself inline, so the UI never shows a value the engine did not accept
+- Per-setting "changed from default" marker and one-click restore; a restore-all that touches
+  only what is currently in view
+- The previous hand-written form remains as *Paths & allowlist* for the list-valued settings
+  (safe-write roots, shell allowlist) that the scalar registry cannot express yet
+- A project with no `config.yml` says so and offers a retry, rather than presenting an editor
+  backed by defaults it has nowhere to save. `getConfigSchema` distinguishes that case from a
+  genuine failure
+- All settings strings go through `DesktopStrings`, including a new pattern for parameterized
+  labels (counts, the searched term) so substitutions stay with the sentence
+
+**Documentation**
+- All 144 keys now carry a `description`, taken from `configuration-reference.md` where it
+  already existed (123 keys) and newly written from the consuming code for the rest (21)
+- The reference documented itself as exhaustive but was missing 18 keys; they are now listed
+- `config_field_documentation_test.dart` keeps registry, descriptions, and the reference in sync
+
+**Found while doing this**
+- `autopilot.vision_drift_check_enabled` and `autopilot.vision_drift_check_interval` are
+  configurable but no pipeline stage reads them — setting them currently does nothing. Their
+  descriptions say so rather than implying behaviour that does not exist.
+
+---
+
 ### 2026-08-29 — Full-Product Public Release
 
 **Public mirror is no longer core-only.** The GUI, desktop shell, platform directories,

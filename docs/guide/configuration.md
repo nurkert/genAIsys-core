@@ -10,6 +10,24 @@ How to configure Genaisys through `.genaisys/config.yml`.
 
 All project-level configuration lives in `.genaisys/config.yml`. The file is schema-validated on every read — invalid config blocks operation ([fail-closed](../glossary.md#fail-closed)).
 
+You can edit it three ways, and they all go through the same validation:
+
+| Way | Best for |
+|-----|----------|
+| **Desktop app → Settings** | Browsing and changing anything. Every setting is listed with an explanation, grouped by area, and searchable. Changes apply immediately; a rejected value is refused with a reason and nothing is written. |
+| **`genaisys config` CLI** | Scripting and CI. |
+| **Editing `config.yml` directly** | Bulk edits and version-controlled changes. |
+
+The app writes with a YAML editor that preserves your comments and formatting, so hand-written
+notes in `config.yml` survive a change made in the GUI.
+
+### Settings in the desktop app
+
+Each setting shows what it does, whether it differs from its default, and a one-click restore.
+Search spans every area, so you can find a setting without knowing which section it belongs to.
+The value shown is always what is on disk — if the engine refuses a value, the row reverts and
+explains why.
+
 ### Validate Configuration
 
 ```bash

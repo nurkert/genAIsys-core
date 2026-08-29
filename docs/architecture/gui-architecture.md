@@ -340,6 +340,21 @@ Workspace views use `LayoutBuilder` for responsive breakpoints:
 
 ---
 
+### Settings Workspace
+
+`SettingsWorkspaceView` is the one workspace that is not hand-laid-out per field:
+
+- **All settings** — generated from the config field registry, so it covers every scalar config
+  key the engine knows about. A group rail narrows to one area; a search spans every group.
+  Values are written through `ConfigRegistryService`, which edits `config.yml` with `YamlEditor`
+  and therefore preserves comments and formatting.
+- **Paths & allowlist** — the legacy `ProjectSettingsWorkspaceView`, retained for the
+  list-valued settings the scalar registry cannot express.
+
+See [GUI Development Guide](gui-development-guide.md) — *Settings Are Generated, Not Hand-Built*.
+
+---
+
 ## 8. Localization Architecture
 
 ```

@@ -4,6 +4,7 @@
 
 import '../dto/action_dto.dart';
 import '../dto/config_dto.dart';
+import '../dto/config_schema_dto.dart';
 import '../dto/dashboard_dto.dart';
 import '../dto/hitl_gate_dto.dart';
 import '../dto/review_status_dto.dart';
@@ -41,6 +42,29 @@ abstract class GenaisysApi {
   Future<AppResult<ConfigUpdateDto>> updateConfig(
     String projectRoot, {
     required AppConfigDto config,
+  });
+
+  /// Every registered config key with its current value and the metadata a
+  /// frontend needs to render and validate it.
+  ///
+  /// Unlike [getConfig], which exposes a hand-maintained subset, this is driven
+  /// by the config field registry: a newly registered key shows up here — and
+  /// therefore in the GUI — without any additional plumbing.
+  Future<AppResult<ConfigSchemaDto>> getConfigSchema(String projectRoot);
+
+  /// Writes settings by qualified key (e.g. `autopilot.max_task_retries`).
+  ///
+  /// All-or-nothing: an invalid value rejects the whole batch and leaves the
+  /// config file untouched.
+  Future<AppResult<ConfigWriteResultDto>> setConfigValues(
+    String projectRoot, {
+    required Map<String, Object?> values,
+  });
+
+  /// Restores the given keys to their registered defaults.
+  Future<AppResult<ConfigWriteResultDto>> resetConfigValues(
+    String projectRoot, {
+    required List<String> qualifiedKeys,
   });
 
   Future<AppResult<TaskActivationDto>> activateTask(

@@ -209,6 +209,15 @@ class DesktopStrings {
     required this.projectSettingsTitle,
     required this.projectSettingsSubtitle,
     required this.projectSettingsUnavailableLabel,
+    required this.settingsAllTabLabel,
+    required this.settingsListsTabLabel,
+    required this.settingsSearchHint,
+    required this.settingsClearSearchTooltip,
+    required this.settingsRetryLabel,
+    required this.settingsNoAreaSettingsLabel,
+    required this.settingsModifiedTooltip,
+    required this.settingsDeprecatedLabel,
+    required this.settingsNotSetLabel,
     required this.projectSettingsRetryAction,
     required this.projectSettingsPoliciesTitle,
     required this.projectSettingsPoliciesSubtitle,
@@ -481,6 +490,17 @@ class DesktopStrings {
   final String projectSettingsTitle;
   final String projectSettingsSubtitle;
   final String projectSettingsUnavailableLabel;
+
+  /// Settings surface generated from the config field registry.
+  final String settingsAllTabLabel;
+  final String settingsListsTabLabel;
+  final String settingsSearchHint;
+  final String settingsClearSearchTooltip;
+  final String settingsRetryLabel;
+  final String settingsNoAreaSettingsLabel;
+  final String settingsModifiedTooltip;
+  final String settingsDeprecatedLabel;
+  final String settingsNotSetLabel;
   final String projectSettingsRetryAction;
   final String projectSettingsPoliciesTitle;
   final String projectSettingsPoliciesSubtitle;
@@ -575,6 +595,25 @@ class DesktopStrings {
   final List<DesktopActivityCopy> activities;
   final List<String> timelineEntries;
   final List<String> quickFilterLabels;
+
+  // Parameterized labels.
+  //
+  // The fields above cover fixed text. Labels that interpolate a value are
+  // methods instead, so the number and order of substitutions stay with the
+  // sentence rather than being assembled in a widget. A future locale
+  // overrides these by subclassing.
+  String settingsChangedCountLabel(int changed, int total) =>
+      '$changed of $total changed';
+
+  String settingsSearchResultLabel(int shown, int total) =>
+      '$shown of $total settings';
+
+  String settingsRestoreVisibleLabel(int count) => 'Restore $count';
+
+  String settingsNoMatchLabel(String query) => 'No setting matches “$query”.';
+
+  String settingsRestoreDefaultTooltip(String value) =>
+      'Restore default ($value)';
 
   static const DesktopStrings english = DesktopStrings(
     appTitle: 'Genaisys',
@@ -771,6 +810,15 @@ class DesktopStrings {
     projectSettingsSubtitle:
         'Configure defaults and delivery guardrails for this project workspace.',
     projectSettingsUnavailableLabel: 'Project config is unavailable.',
+    settingsAllTabLabel: 'All settings',
+    settingsListsTabLabel: 'Paths & allowlist',
+    settingsSearchHint: 'Search all settings',
+    settingsClearSearchTooltip: 'Clear search',
+    settingsRetryLabel: 'Try again',
+    settingsNoAreaSettingsLabel: 'This area has no settings.',
+    settingsModifiedTooltip: 'Changed from the default',
+    settingsDeprecatedLabel: 'Deprecated',
+    settingsNotSetLabel: 'not set',
     projectSettingsRetryAction: 'Retry',
     projectSettingsPoliciesTitle: 'Policies',
     projectSettingsPoliciesSubtitle: 'Safe-write, allowlist, and diff budgets.',

@@ -60,6 +60,30 @@ Two consequences for contributors:
 
 ---
 
+## The Flutter version is pinned
+
+Both workflows pin `FLUTTER_VERSION` instead of tracking `channel: stable`.
+
+`stable` floats. Combined with `dart analyze --fatal-infos`, a new SDK's new lints turn CI red
+without anyone changing a line of code — and release artifacts would be built by whichever SDK
+happened to be current that day. Neither is acceptable under the CI determinism rule.
+
+**To bump the SDK**, in its own delivery:
+
+1. Upgrade locally (`flutter upgrade`) and note the exact version.
+2. `flutter pub get && dart analyze --fatal-infos --fatal-warnings .` — new lints usually appear
+   here; fix them.
+3. `flutter test` in full, and `flutter build <platform> --release` for at least one desktop
+   target. A dependency can compile against one SDK and not the next; the analyzer will not tell
+   you, because it does not analyze dependency sources.
+4. Update `FLUTTER_VERSION` in `.github/workflows/flutter-ci.yml` and
+   `.github/workflows/release.yml`.
+
+Do not fold an SDK bump into a feature delivery: when CI then breaks, you cannot tell which
+change caused it.
+
+---
+
 ## Branding assets
 
 All icons derive from a single source: `assets/branding/genaisys.svg`.
