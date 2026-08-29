@@ -22,6 +22,7 @@ mixin _GitHistoryOps on _GitSharedState {
     return result.stdout.toString().trim();
   }
 
+  @override
   String currentBranch(String path) {
     final symbolic = _runGit(path, ['symbolic-ref', '--short', 'HEAD']);
     if (symbolic.exitCode == 0) {
@@ -34,6 +35,7 @@ mixin _GitHistoryOps on _GitSharedState {
     return result.stdout.toString().trim();
   }
 
+  @override
   bool isClean(String path) {
     return !hasChanges(path);
   }

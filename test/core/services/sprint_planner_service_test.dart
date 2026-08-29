@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:genaisys/core/config/project_config.dart';
 import 'package:genaisys/core/models/task_draft.dart';
 import 'package:genaisys/core/models/task.dart';
@@ -87,12 +87,14 @@ void main() {
 
   tearDown(() => workspace.dispose());
 
-  SprintPlannerService _makeService({
+  SprintPlannerService makeService({
     List<TaskDraft>? drafts,
     VisionEvaluationResult? visionResult,
   }) => SprintPlannerService(
     strategicPlanner: _FakeStrategicPlanner(drafts: drafts ?? _drafts(5)),
-    visionEvaluationService: _FakeVisionEval(result: visionResult ?? _notFulfilled()),
+    visionEvaluationService: _FakeVisionEval(
+      result: visionResult ?? _notFulfilled(),
+    ),
   );
 
   // ─── detectCurrentSprint ────────────────────────────────────────────────────
@@ -100,13 +102,13 @@ void main() {
   group('detectCurrentSprint', () {
     test('returns 0 when TASKS.md has no Sprint headers', () {
       workspace.writeTasks('- [ ] [P1] [CORE] Do something\n');
-      final svc = _makeService();
+      final svc = makeService();
       expect(svc.detectCurrentSprint(workspace.layout.tasksPath), 0);
     });
 
     test('returns sprint number when Sprint header exists', () {
       workspace.writeTasks('## Sprint 3\n- [ ] [P1] [CORE] Task\n');
-      final svc = _makeService();
+      final svc = makeService();
       expect(svc.detectCurrentSprint(workspace.layout.tasksPath), 3);
     });
 
@@ -116,12 +118,12 @@ void main() {
         '## Sprint 2\n- [x] [P1] [CORE] Done2\n'
         '## Sprint 3\n- [ ] [P1] [CORE] Open\n',
       );
-      final svc = _makeService();
+      final svc = makeService();
       expect(svc.detectCurrentSprint(workspace.layout.tasksPath), 3);
     });
 
     test('returns 0 when TASKS.md does not exist', () {
-      final svc = _makeService();
+      final svc = makeService();
       expect(svc.detectCurrentSprint('/nonexistent/TASKS.md'), 0);
     });
   });
@@ -131,7 +133,7 @@ void main() {
   group('no action when open tasks remain', () {
     test('returns noAction when there are open tasks', () async {
       workspace.writeTasks('## Sprint 1\n- [ ] [P1] [CORE] Still open\n');
-      final svc = _makeService();
+      final svc = makeService();
 
       final result = await svc.maybeStartNextSprint(
         workspace.root.path,
@@ -150,7 +152,7 @@ void main() {
   group('generates next sprint', () {
     test('sprint 0 → sprint 1 created with N tasks', () async {
       workspace.writeTasks('## Sprint 1\n- [x] [P1] [CORE] Done task\n');
-      final svc = _makeService(drafts: _drafts(3));
+      final svc = makeService(drafts: _drafts(3));
 
       final result = await svc.maybeStartNextSprint(
         workspace.root.path,
@@ -165,7 +167,7 @@ void main() {
 
     test('tasks are written under ## Sprint 2 header in TASKS.md', () async {
       workspace.writeTasks('## Sprint 1\n- [x] [P1] [CORE] Done task\n');
-      final svc = _makeService(drafts: _drafts(2));
+      final svc = makeService(drafts: _drafts(2));
 
       await svc.maybeStartNextSprint(
         workspace.root.path,
@@ -179,20 +181,23 @@ void main() {
       expect(content, contains('Task 2'));
     });
 
-    test('run-log contains sprint_planning_started and sprint_planning_complete', () async {
-      workspace.writeTasks('- [x] [P1] [CORE] Done\n');
-      final svc = _makeService(drafts: _drafts(2));
+    test(
+      'run-log contains sprint_planning_started and sprint_planning_complete',
+      () async {
+        workspace.writeTasks('- [x] [P1] [CORE] Done\n');
+        final svc = makeService(drafts: _drafts(2));
 
-      await svc.maybeStartNextSprint(
-        workspace.root.path,
-        config: _config(sprintSize: 2),
-        stepId: 'step-3',
-      );
+        await svc.maybeStartNextSprint(
+          workspace.root.path,
+          config: _config(sprintSize: 2),
+          stepId: 'step-3',
+        );
 
-      final log = File(workspace.layout.runLogPath).readAsStringSync();
-      expect(log, contains('sprint_planning_started'));
-      expect(log, contains('sprint_planning_complete'));
-    });
+        final log = File(workspace.layout.runLogPath).readAsStringSync();
+        expect(log, contains('sprint_planning_started'));
+        expect(log, contains('sprint_planning_complete'));
+      },
+    );
   });
 
   // ─── maybeStartNextSprint — vision fulfilled ────────────────────────────────
@@ -200,7 +205,7 @@ void main() {
   group('vision fulfilled', () {
     test('returns visionFulfilled=true and writes no tasks', () async {
       workspace.writeTasks('## Sprint 1\n- [x] [P1] [CORE] Done\n');
-      final svc = _makeService(visionResult: _fulfilled());
+      final svc = makeService(visionResult: _fulfilled());
 
       final result = await svc.maybeStartNextSprint(
         workspace.root.path,
@@ -215,7 +220,7 @@ void main() {
 
     test('run-log contains sprint_vision_fulfilled event', () async {
       workspace.writeTasks('## Sprint 1\n- [x] [P1] [CORE] Done\n');
-      final svc = _makeService(visionResult: _fulfilled());
+      final svc = makeService(visionResult: _fulfilled());
 
       await svc.maybeStartNextSprint(
         workspace.root.path,
@@ -233,7 +238,7 @@ void main() {
   group('max sprints reached', () {
     test('returns maxSprintsReached=true when sprint >= maxSprints', () async {
       workspace.writeTasks('## Sprint 3\n- [x] [P1] [CORE] Done\n');
-      final svc = _makeService();
+      final svc = makeService();
 
       final result = await svc.maybeStartNextSprint(
         workspace.root.path,
@@ -247,7 +252,7 @@ void main() {
 
     test('run-log contains sprint_max_reached event', () async {
       workspace.writeTasks('## Sprint 2\n- [x] [P1] [CORE] Done\n');
-      final svc = _makeService();
+      final svc = makeService();
 
       await svc.maybeStartNextSprint(
         workspace.root.path,
@@ -259,18 +264,21 @@ void main() {
       expect(log, contains('sprint_max_reached'));
     });
 
-    test('never reaches maxSprintsReached when maxSprints=0 (unlimited)', () async {
-      workspace.writeTasks('## Sprint 99\n- [x] [P1] [CORE] Done\n');
-      final svc = _makeService(drafts: _drafts(1));
+    test(
+      'never reaches maxSprintsReached when maxSprints=0 (unlimited)',
+      () async {
+        workspace.writeTasks('## Sprint 99\n- [x] [P1] [CORE] Done\n');
+        final svc = makeService(drafts: _drafts(1));
 
-      final result = await svc.maybeStartNextSprint(
-        workspace.root.path,
-        config: _config(maxSprints: 0),
-        stepId: 'step-u',
-      );
+        final result = await svc.maybeStartNextSprint(
+          workspace.root.path,
+          config: _config(maxSprints: 0),
+          stepId: 'step-u',
+        );
 
-      expect(result.maxSprintsReached, isFalse);
-      expect(result.sprintStarted, isTrue);
-    });
+        expect(result.maxSprintsReached, isFalse);
+        expect(result.sprintStarted, isTrue);
+      },
+    );
   });
 }

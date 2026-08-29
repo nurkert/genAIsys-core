@@ -16,10 +16,12 @@ class TextPresenter implements CliPresenter {
 
   static final RedactionService _redactionService = RedactionService.shared;
 
+  @override
   void writeInit(IOSink out, ProjectInitializationDto dto) {
     _writeLine(out, 'Genaisys initialized at: ${dto.genaisysDir}');
   }
 
+  @override
   void writeStatus(IOSink out, AppStatusSnapshotDto dto) {
     _writeLine(out, 'Project root: ${dto.projectRoot}');
     _writeLine(out, 'Tasks total: ${dto.tasksTotal}');
@@ -37,10 +39,12 @@ class TextPresenter implements CliPresenter {
     _writeTelemetry(out, dto.telemetry);
   }
 
+  @override
   void writeCycle(IOSink out, CycleTickDto dto) {
     _writeLine(out, 'Cycle updated to ${dto.cycleCount}');
   }
 
+  @override
   void writeCycleRun(IOSink out, TaskCycleExecutionDto dto) {
     _writeLine(out, 'Task cycle completed.');
     _writeLine(out, 'Review recorded: ${dto.reviewRecorded}');
@@ -74,6 +78,7 @@ class TextPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeActivate(IOSink out, TaskActivationDto dto) {
     if (!dto.activated || dto.task == null) {
       _writeLine(out, 'No open tasks found.');
@@ -82,10 +87,12 @@ class TextPresenter implements CliPresenter {
     _writeLine(out, 'Activated: ${dto.task!.title}');
   }
 
+  @override
   void writeDeactivate(IOSink out, TaskDeactivationDto dto) {
     _writeLine(out, 'Active task cleared.');
   }
 
+  @override
   void writeSpecInit(IOSink out, SpecInitializationDto dto) {
     if (!dto.created) {
       _writeLine(out, 'Already exists: ${dto.path}');
@@ -94,14 +101,17 @@ class TextPresenter implements CliPresenter {
     _writeLine(out, 'Created: ${dto.path}');
   }
 
+  @override
   void writeDone(IOSink out, TaskDoneDto dto) {
     _writeLine(out, 'Marked done: ${dto.taskTitle}');
   }
 
+  @override
   void writeBlock(IOSink out, TaskBlockedDto dto) {
     _writeLine(out, 'Blocked: ${dto.taskTitle}');
   }
 
+  @override
   void writeReviewStatus(IOSink out, AppReviewStatusDto dto) {
     _writeLine(out, 'Review status: ${dto.status}');
     _writeLine(out, 'Review updated at: ${dto.updatedAt}');
@@ -118,6 +128,7 @@ class TextPresenter implements CliPresenter {
     _writeLine(out, 'Review ${decision}d for: ${dto.taskTitle}');
   }
 
+  @override
   void writeReviewClear(IOSink out, ReviewClearDto dto) {
     if (dto.note != null && dto.note!.isNotEmpty) {
       _writeLine(out, 'Review note: ${dto.note}');
@@ -125,6 +136,7 @@ class TextPresenter implements CliPresenter {
     _writeLine(out, 'Review status cleared.');
   }
 
+  @override
   void writeAutopilotStep(IOSink out, AutopilotStepDto dto) {
     _writeLine(out, 'Autopilot step completed.');
     _writeLine(out, 'Executed cycle: ${dto.executedCycle}');
@@ -135,6 +147,7 @@ class TextPresenter implements CliPresenter {
     _writeLine(out, 'Task blocked: ${dto.taskBlocked}');
   }
 
+  @override
   void writeAutopilotRun(IOSink out, AutopilotRunDto dto) {
     if (o.isRich) {
       _writeLine(out, o.separator());
@@ -157,6 +170,7 @@ class TextPresenter implements CliPresenter {
     }
   }
 
+  @override
   void writeAutopilotCandidate(IOSink out, AutopilotCandidateDto dto) {
     _writeLine(
       out,
@@ -198,6 +212,7 @@ class TextPresenter implements CliPresenter {
     }
   }
 
+  @override
   void writeAutopilotPilot(IOSink out, AutopilotPilotDto dto) {
     _writeLine(
       out,
@@ -223,6 +238,7 @@ class TextPresenter implements CliPresenter {
     }
   }
 
+  @override
   void writeAutopilotBranchCleanup(IOSink out, AutopilotBranchCleanupDto dto) {
     _writeLine(out, 'Autopilot branch cleanup completed.');
     _writeLine(out, 'Base branch: ${dto.baseBranch}');
@@ -251,6 +267,7 @@ class TextPresenter implements CliPresenter {
     }
   }
 
+  @override
   void writeAutopilotStatus(IOSink out, AutopilotStatusDto dto) {
     if (o.isRich) {
       _writeAutopilotStatusRich(out, dto);
@@ -260,7 +277,9 @@ class TextPresenter implements CliPresenter {
   }
 
   void _writeAutopilotStatusRich(IOSink out, AutopilotStatusDto dto) {
-    final runLabel = dto.autopilotRunning ? o.bold('RUNNING') : o.dim('STOPPED');
+    final runLabel = dto.autopilotRunning
+        ? o.bold('RUNNING')
+        : o.dim('STOPPED');
     final pid = dto.pid != null ? '  ${o.bullet}  PID ${dto.pid}' : '';
     final started = dto.startedAt != null
         ? '  ${o.bullet}  started ${o.parseTimestamp(dto.startedAt)}'
@@ -317,7 +336,10 @@ class TextPresenter implements CliPresenter {
         out,
         '  ${o.yellow('⏸ HITL GATE')}  awaiting decision  ${dto.hitlGateEvent ?? ''}',
       );
-      _writeLine(out, '    ${o.arrow} genaisys hitl approve <path>  |  genaisys hitl reject <path>');
+      _writeLine(
+        out,
+        '    ${o.arrow} genaisys hitl approve <path>  |  genaisys hitl reject <path>',
+      );
     }
     if (dto.stallReason != null && dto.stallReason!.isNotEmpty) {
       _writeLine(out, '  Stall   ${o.yellow(dto.stallReason!)}');
@@ -364,12 +386,10 @@ class TextPresenter implements CliPresenter {
     final summary = dto.lastStepSummary;
     if (summary != null) {
       final stepAt = o.parseTimestamp(summary.timestamp);
-      final decision =
-          summary.decision != null ? ' decision=${summary.decision}' : '';
-      _writeLine(
-        out,
-        'last_step step=${summary.stepId} at=$stepAt$decision',
-      );
+      final decision = summary.decision != null
+          ? ' decision=${summary.decision}'
+          : '';
+      _writeLine(out, 'last_step step=${summary.stepId} at=$stepAt$decision');
     }
 
     if (dto.hitlGatePending) {
@@ -410,10 +430,12 @@ class TextPresenter implements CliPresenter {
 
   String _logHealthLabel(AppHealthCheckDto check) => check.ok ? 'OK' : 'FAIL';
 
+  @override
   void writeAutopilotStop(IOSink out, AutopilotStopDto dto) {
     _writeLine(out, 'Autopilot stopped.');
   }
 
+  @override
   void writeAutopilotSupervisorStart(
     IOSink out,
     AutopilotSupervisorStartDto dto,
@@ -425,6 +447,7 @@ class TextPresenter implements CliPresenter {
     _writeLine(out, 'Resume action: ${dto.resumeAction}');
   }
 
+  @override
   void writeAutopilotSupervisorStop(
     IOSink out,
     AutopilotSupervisorStopDto dto,
@@ -438,6 +461,7 @@ class TextPresenter implements CliPresenter {
     _writeLine(out, 'Reason: ${dto.reason}');
   }
 
+  @override
   void writeAutopilotSupervisorStatus(
     IOSink out,
     AutopilotSupervisorStatusDto dto,
@@ -453,14 +477,15 @@ class TextPresenter implements CliPresenter {
     IOSink out,
     AutopilotSupervisorStatusDto dto,
   ) {
-    final runLabel =
-        dto.running ? o.bold('RUNNING') : o.dim('STOPPED');
+    final runLabel = dto.running ? o.bold('RUNNING') : o.dim('STOPPED');
     final session = _labelOrNone(dto.sessionId);
     final profile = _labelOrNone(dto.profile);
     _writeLine(out, o.boxHeader('SUPERVISOR'));
     _writeLine(
       out,
-      o.boxRow('$runLabel  ${o.bullet}  session $session  ${o.bullet}  profile $profile'),
+      o.boxRow(
+        '$runLabel  ${o.bullet}  session $session  ${o.bullet}  profile $profile',
+      ),
     );
     if (dto.workerPid != null) {
       _writeLine(
@@ -475,7 +500,9 @@ class TextPresenter implements CliPresenter {
     _writeLine(out, o.boxRow('Started $startedAt'));
     _writeLine(out, o.boxFooter());
 
-    final apLabel = dto.autopilotRunning ? o.green('RUNNING') : o.dim('STOPPED');
+    final apLabel = dto.autopilotRunning
+        ? o.green('RUNNING')
+        : o.dim('STOPPED');
     final apPid = dto.autopilotPid != null ? ' PID ${dto.autopilotPid}' : '';
     _writeLine(out, '  Autopilot  $apLabel$apPid');
 
@@ -490,12 +517,8 @@ class TextPresenter implements CliPresenter {
     if (dto.lastHaltReason != null && dto.lastHaltReason!.isNotEmpty) {
       _writeLine(out, '  Last halt   ${o.yellow(dto.lastHaltReason!)}');
     }
-    if (dto.autopilotLastError != null &&
-        dto.autopilotLastError!.isNotEmpty) {
-      _writeLine(
-        out,
-        '  Last error  ${o.red(dto.autopilotLastError!)}',
-      );
+    if (dto.autopilotLastError != null && dto.autopilotLastError!.isNotEmpty) {
+      _writeLine(out, '  Last error  ${o.red(dto.autopilotLastError!)}');
     }
   }
 
@@ -530,21 +553,18 @@ class TextPresenter implements CliPresenter {
     if (dto.lastHaltReason != null && dto.lastHaltReason!.isNotEmpty) {
       _writeLine(out, 'halt_reason=${dto.lastHaltReason}');
     }
-    if (dto.autopilotLastError != null &&
-        dto.autopilotLastError!.isNotEmpty) {
+    if (dto.autopilotLastError != null && dto.autopilotLastError!.isNotEmpty) {
       _writeLine(out, 'last_error="${dto.autopilotLastError}"');
     }
     if (dto.cooldownUntil != null && dto.cooldownUntil!.isNotEmpty) {
-      _writeLine(
-        out,
-        'cooldown_until=${o.parseTimestamp(dto.cooldownUntil)}',
-      );
+      _writeLine(out, 'cooldown_until=${o.parseTimestamp(dto.cooldownUntil)}');
     }
     if (dto.lastResumeAction != null && dto.lastResumeAction!.isNotEmpty) {
       _writeLine(out, 'last_resume=${dto.lastResumeAction}');
     }
   }
 
+  @override
   void writeAutopilotSmoke(IOSink out, AutopilotSmokeDto dto) {
     if (dto.ok) {
       _writeLine(out, 'Autopilot smoke check OK.');
@@ -605,6 +625,7 @@ class TextPresenter implements CliPresenter {
     }
   }
 
+  @override
   void writeAutopilotImprove(IOSink out, AutopilotImproveDto dto) {
     _writeLine(out, 'Autopilot self-improvement completed.');
     final meta = dto.meta;
@@ -650,6 +671,7 @@ class TextPresenter implements CliPresenter {
     }
   }
 
+  @override
   void writeAutopilotHeal(IOSink out, AutopilotHealDto dto) {
     _writeLine(out, 'Autopilot incident heal completed.');
     _writeLine(out, 'Reason: ${dto.reason}');

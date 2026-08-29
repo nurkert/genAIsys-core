@@ -12,4 +12,4 @@ Developer and contributor onboarding for the Genaisys project.
 | [Adding CLI Commands](adding-cli-commands.md) | Handler + presenter pattern |
 | [Adding Providers](adding-providers.md) | AgentRunner interface, registration |
 | [Testing Guidelines](testing-guidelines.md) | CI determinism, resource safety, conventions |
-| [Agent Guidelines](agent-guidelines.md) | Condensed CLAUDE.md for AI agents |
+| [Releasing](releasing.md) | Version tags, multi-platform builds, branding assets |

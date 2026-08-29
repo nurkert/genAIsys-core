@@ -1,0 +1,25 @@
+# Flutter-free pubspec used only to compile the standalone `genaisys` CLI binary.
+#
+# Why this exists: the root pubspec pulls Flutter, and one of its transitive
+# dependencies (objective_c, via path_provider_foundation) uses build hooks,
+# which `dart compile exe` does not support. lib/core/ has zero Flutter imports,
+# so compiling the CLI against this reduced dependency set produces the same
+# binary without the Flutter toolchain.
+#
+# See .github/workflows/release.yml (Build CLI) and docs/contributing/releasing.md.
+# Keep the dependency list in sync with the non-Flutter dependencies of the root
+# pubspec.yaml.
+name: genaisys
+description: "Genaisys — sovereign orchestration for AI-assisted software delivery."
+publish_to: 'none'
+version: 0.0.4
+
+environment:
+  sdk: ^3.10.8
+
+dependencies:
+  meta: ^1.16.0
+  yaml: ^3.1.2
+  yaml_edit: ^2.2.1
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.10.0

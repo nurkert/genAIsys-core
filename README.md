@@ -4,7 +4,7 @@ A desktop-first orchestrator that applies software-engineering discipline to AI-
 Genaisys doesn't just run an AI coding agent — it manages the full lifecycle: planning, code generation,
 quality gates, review, and git delivery, in a controlled, auditable, and repeatable process.
 
-![Tests](https://img.shields.io/badge/tests-2653%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-2327%20passing-brightgreen)
 ![Version](https://img.shields.io/badge/version-0.0.4-blue)
 ![Phase](https://img.shields.io/badge/phase-2%20active-orange)
 
@@ -106,28 +106,59 @@ atomic git delivery, full run-log evidence.
 
 ---
 
+## Download
+
+Every tagged release ships prebuilt desktop apps and standalone CLI binaries on the
+[Releases page](https://github.com/nurkert/genAIsys-core/releases).
+
+| Platform | Artifact | Install |
+|---|---|---|
+| Linux (Debian/Ubuntu) | `genaisys_<version>_amd64.deb` | `sudo apt install ./genaisys_<version>_amd64.deb` |
+| Linux (portable) | `genaisys-linux-x64.tar.gz` | `tar -xzf … && ./genaisys` |
+| macOS (Apple Silicon) | `genaisys-macos-arm64.zip` | Unzip, move to `/Applications` (unsigned — first launch: right-click → Open) |
+| Windows | `genaisys-windows-x64.zip` | Unzip, run `genaisys.exe` |
+| CLI only | `genaisys-cli-<platform>` | Self-contained binary, no Flutter runtime needed |
+
+The `.deb` installs the desktop app plus the `genaisys` CLI on your `PATH` and registers a
+desktop entry, so Genaisys shows up in your application menu.
+Verify downloads against the `SHA256SUMS` file attached to each release.
+
+---
+
 ## Quick Start
 
 ### Prerequisites
 
-- Dart SDK >= 3.10
 - Git
 - At least one AI provider CLI installed and authenticated:
   `claude` (Claude Code), `gemini` (Gemini CLI), `codex`, `vibe`, or `amp`
+- For building from source: Flutter SDK (stable) for the desktop app, or Dart SDK >= 3.10
+  for the CLI alone
 
-### 1. Build
+### 1. Install or build
+
+Use a [prebuilt release](#download), or build from source:
 
 ```bash
-git clone <repo-url> genaisys
+git clone https://github.com/nurkert/genAIsys-core.git genaisys
 cd genaisys
+flutter pub get
+
+# Desktop app
+flutter build linux --release      # or: macos / windows
+
+# CLI
 dart compile exe bin/genaisys_cli.dart -o build/genaisys
 ```
 
-Or run directly without building:
+Or run the CLI directly without building:
 
 ```bash
 dart run bin/genaisys_cli.dart <command> <path>
 ```
+
+Everything below uses the CLI. The desktop app exposes the same lifecycle — backlog,
+autopilot control, review gates, run-log — as a graphical workspace over the identical core.
 
 ### 2. Initialize your project
 
@@ -472,8 +503,6 @@ Provider setup guide: [Providers Guide](docs/guide/providers.md)
 | | |
 |---|---|
 | [Vision](docs/project/vision.md) | Long-term mission and design philosophy |
-| [Roadmap](docs/project/roadmap.md) | Phase plan, current status, upcoming milestones |
-| [Capability Gaps](docs/project/capability-gaps.md) | Known limitations and deferred work |
 | [Glossary](docs/glossary.md) | 50+ Genaisys-specific terms defined |
 
 ---
@@ -497,16 +526,16 @@ Upcoming:
 - Phase 2f: Security Scan integration (static analysis, secret scanning)
 - Phase 2j: Native runtime transition (replace CLI-based agent execution)
 
-Test count: **2653 passing**, 0 known flaky.
+Test count: **2327 passing**, 0 known flaky.
 
-Full plan: [Roadmap](docs/project/roadmap.md)
+Full plan: [Project Docs](docs/project/README.md)
 
 ---
 
 ## Contributing
 
-Clone the repo, run `dart test` to verify your environment, and read [CLAUDE.md](CLAUDE.md) (also
-available as [AGENTS.md](AGENTS.md)) for the full agent and contributor guidelines.
+Clone the repo, run `flutter test` to verify your environment, and read the
+[Contributing Guide](docs/contributing/README.md) for the full contributor guidelines.
 
 Key rules:
 - English only — all code, comments, commit messages, and docs

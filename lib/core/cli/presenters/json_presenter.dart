@@ -21,6 +21,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeInit(IOSink out, ProjectInitializationDto dto) {
     _writeJsonLine(
       out,
@@ -31,6 +32,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeStatus(IOSink out, AppStatusSnapshotDto dto) {
     _writeJsonLine(
       out,
@@ -56,6 +58,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeCycle(IOSink out, CycleTickDto dto) {
     _writeJsonLine(
       out,
@@ -66,6 +69,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeCycleRun(IOSink out, TaskCycleExecutionDto dto) {
     _writeJsonLine(
       out,
@@ -91,6 +95,7 @@ class JsonPresenter implements CliPresenter {
     _writeJsonLine(out, jsonEncode(_taskPayload(dto)));
   }
 
+  @override
   void writeActivate(IOSink out, TaskActivationDto dto) {
     _writeJsonLine(
       out,
@@ -101,6 +106,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeDeactivate(IOSink out, TaskDeactivationDto dto) {
     _writeJsonLine(
       out,
@@ -115,6 +121,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeSpecInit(IOSink out, SpecInitializationDto dto) {
     _writeJsonLine(
       out,
@@ -122,6 +129,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeDone(IOSink out, TaskDoneDto dto) {
     _writeJsonLine(
       out,
@@ -132,6 +140,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeBlock(IOSink out, TaskBlockedDto dto) {
     _writeJsonLine(
       out,
@@ -143,6 +152,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeReviewStatus(IOSink out, AppReviewStatusDto dto) {
     _writeJsonLine(
       out,
@@ -165,6 +175,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeReviewClear(IOSink out, ReviewClearDto dto) {
     _writeJsonLine(
       out,
@@ -177,6 +188,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeAutopilotStep(IOSink out, AutopilotStepDto dto) {
     _writeJsonLine(
       out,
@@ -194,6 +206,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeAutopilotRun(IOSink out, AutopilotRunDto dto) {
     _writeJsonLine(
       out,
@@ -210,6 +223,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeAutopilotCandidate(IOSink out, AutopilotCandidateDto dto) {
     _writeJsonLine(
       out,
@@ -237,6 +251,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeAutopilotPilot(IOSink out, AutopilotPilotDto dto) {
     _writeJsonLine(
       out,
@@ -263,6 +278,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeAutopilotBranchCleanup(IOSink out, AutopilotBranchCleanupDto dto) {
     _writeJsonLine(
       out,
@@ -278,6 +294,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeAutopilotStatus(IOSink out, AutopilotStatusDto dto) {
     final summary = dto.lastStepSummary;
     _writeJsonLine(
@@ -343,6 +360,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeAutopilotStop(IOSink out, AutopilotStopDto dto) {
     _writeJsonLine(
       out,
@@ -350,6 +368,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeAutopilotSupervisorStart(
     IOSink out,
     AutopilotSupervisorStartDto dto,
@@ -366,6 +385,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeAutopilotSupervisorStop(
     IOSink out,
     AutopilotSupervisorStopDto dto,
@@ -380,6 +400,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeAutopilotSupervisorStatus(
     IOSink out,
     AutopilotSupervisorStatusDto dto,
@@ -416,6 +437,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeAutopilotSmoke(IOSink out, AutopilotSmokeDto dto) {
     _writeJsonLine(
       out,
@@ -458,6 +480,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeAutopilotImprove(IOSink out, AutopilotImproveDto dto) {
     _writeJsonLine(
       out,
@@ -513,6 +536,7 @@ class JsonPresenter implements CliPresenter {
     );
   }
 
+  @override
   void writeAutopilotHeal(IOSink out, AutopilotHealDto dto) {
     _writeJsonLine(
       out,
@@ -651,10 +675,7 @@ class JsonPresenter implements CliPresenter {
   void writeHitlDecision(IOSink out, String decision, {String? note}) {
     _writeJsonLine(
       out,
-      jsonEncode(<String, Object?>{
-        'decision': decision,
-        if (note != null) 'note': note,
-      }),
+      jsonEncode(<String, Object?>{'decision': decision, 'note': ?note}),
     );
   }
 

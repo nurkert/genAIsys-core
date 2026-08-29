@@ -125,7 +125,7 @@ On every rejection, the dirty working tree is archived using `git stash` with a 
 - Retry count
 - Timestamp
 
-This stash is never automatically dropped and is retained for forensic inspection. The working tree is guaranteed to be clean after archival — enforcing the [Clean-End Invariant](../CLAUDE.md#8-unattended-anti-block-invariants).
+This stash is never automatically dropped and is retained for forensic inspection. The working tree is guaranteed to be clean after archival — enforcing the Clean-End Invariant.
 
 ---
 

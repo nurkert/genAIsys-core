@@ -141,7 +141,7 @@ A `.genaisys/locks/autopilot.lock` file ensuring only one [autopilot](#autopilot
 ## N
 
 ### Native Agent Runtime
-Direct LLM API integration (bypassing CLI wrappers) for lower latency and finer control. Currently in development (Phase 2). See [Roadmap](project/roadmap.md).
+Direct LLM API integration (bypassing CLI wrappers) for lower latency and finer control. Currently in development (Phase 2). See Roadmap.
 
 ### No-Progress Detection
 The [orchestrator's](#orchestrator) mechanism for detecting when repeated steps produce no useful work, triggering backoff or self-restart. See [State Machine](concepts/state-machine.md).
@@ -237,7 +237,7 @@ A design principle: all orchestrator state, configuration, logs, and task data l
 The core philosophy: Genaisys manages a disciplined software lifecycle with non-negotiable rules, not just code generation. The orchestrator is the authority. See [Vision](project/vision.md).
 
 ### Stabilization Exit Gate
-A mandatory gate that blocks post-stabilization feature work until all P1 tasks reach zero. Machine-checked in CI and fail-closed in preflight. See [Roadmap](project/roadmap.md).
+A mandatory gate that blocks post-stabilization feature work until all P1 tasks reach zero. Machine-checked in CI and fail-closed in preflight. See Roadmap.
 
 ### State Machine
 The 7-phase loop driving the [orchestrator](#orchestrator): gateCheck → preflight → stepExecution → stepOutcome → errorRecovery → progressCheck → sleepAndLoop. See [State Machine](concepts/state-machine.md).

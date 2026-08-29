@@ -9,10 +9,14 @@ if ! command -v rg >/dev/null 2>&1; then
   exit 2
 fi
 
+# lib/core/legacy/ holds the documented back-compat GUI-over-CLI bridge and is
+# exempt by design; test/core/architecture_imports_test.dart carves out the same
+# exemption. Keep both guards in agreement.
 mapfile -t MATCHES < <(
   rg -n "import\\s+['\"](\\.\\./cli/|package:genaisys/core/cli/)" \
     lib/core \
-    --glob '!lib/core/cli/**'
+    --glob '!lib/core/cli/**' \
+    --glob '!lib/core/legacy/**'
 )
 
 VIOLATIONS=()

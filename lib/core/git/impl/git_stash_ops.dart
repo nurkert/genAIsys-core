@@ -51,6 +51,7 @@ mixin _GitStashOps on _GitSharedState {
     }
   }
 
+  @override
   int stashCount(String path) {
     final result = _runGit(path, ['stash', 'list']);
     if (result.exitCode != 0) return 0;
@@ -65,8 +66,11 @@ mixin _GitStashOps on _GitSharedState {
     // Drop from the bottom (oldest first). Stash indices shift after each
     // drop, so always drop the last entry repeatedly.
     for (var i = 0; i < count - maxKeep; i++) {
-      final result =
-          _runGit(path, ['stash', 'drop', 'stash@{${count - 1 - i}}']);
+      final result = _runGit(path, [
+        'stash',
+        'drop',
+        'stash@{${count - 1 - i}}',
+      ]);
       if (result.exitCode != 0) break;
     }
   }

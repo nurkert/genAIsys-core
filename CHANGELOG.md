@@ -6,6 +6,90 @@ All notable changes to Genaisys are documented here. This project follows [Seman
 
 ## [Unreleased] — Phase 2 Active
 
+### 2026-08-29 — Full-Product Public Release
+
+**Public mirror is no longer core-only.** The GUI, desktop shell, platform directories,
+UI documentation, and branding now ship in the public GitHub snapshot. The mirror performs
+no source rewriting: the public tree is the same Flutter project, built and tested with the
+same commands.
+
+**Distribution**
+- New `.github/workflows/release.yml` builds the desktop GUI **and** the CLI for Linux, macOS,
+  and Windows on every `v*` tag, and publishes them as a GitHub Release with `SHA256SUMS`
+- Linux `.deb` installs the GUI to `/opt/genaisys`, puts `genaisys` (CLI) and `genaisys-gui`
+  on `PATH`, and registers a desktop entry with hicolor icons
+- Release job verifies the tag matches `pubspec.yaml` before building
+- Replaces `build-deb.yml`, which packaged only the CLI
+- Removed `dart-ci.yml`; the public repo is a full Flutter project and uses `flutter-ci.yml`
+- `.github/scripts/build_cli.sh` compiles the CLI against a Flutter-free `tool/pubspec.cli.yaml`;
+  `dart compile exe` cannot build against the root pubspec because Flutter pulls `objective_c`,
+  which uses unsupported build hooks
+- New `version_consistency_test.dart`: `CliBranding.version` is hard-coded and previously had no
+  guard tying it to `pubspec.yaml`, so a release could have shipped a binary reporting the wrong
+  version
+
+**Build fix — the desktop GUI did not compile at all**
+- `phosphor_flutter` (last published 2024) extends Flutter's `IconData`, which is now a `final`
+  class. Every GUI build and every widget test failed to compile against current stable Flutter;
+  `dart analyze` did not catch it because the analyzer does not analyze dependency sources.
+- Replaced with the maintained successor `phosphor_icons` ^3.0.1 — same icon family, same
+  `PhosphorIconsRegular` / `PhosphorIconsBold` class names, so the swap is import-only and the
+  visual identity is unchanged
+
+- macOS project migrated to Swift Package Manager for the plugins that support it
+  (`file_selector_macos`, `window_manager`); `desktop_multi_window` and `screen_retriever_macos`
+  remain on CocoaPods until upstream adopts SPM
+
+**CI coverage gap that allowed the above**
+- `flutter-ci.yml` ran a hand-picked list of core test files and never compiled the GUI, so a
+  dependency that stopped building was invisible. Added a `gui-build` job (desktop GUI + CLI
+  binary) and a `widget-tests` job covering `test/ui/` and `test/widget_test.dart`.
+
+**Branding**
+- New anvil mark in `assets/branding/` (SVG + PNG sizes), drawn from the existing metal palette
+- Replaces the default Flutter icon on macOS, Windows, and web; Linux window sets `icon-name`
+
+**Test count**: 2327 passing (the previously documented 2653 could not have been current — three
+UI test files failed to compile and were never counted).
+
+**GUI**
+- Settings sidebar now shows the running build version. The GUI previously displayed the version
+  nowhere, so a user filing a bug report had no way to say which build they were on. The value is
+  selectable so it can be copied straight into a report.
+- Version and product identity moved to `lib/core/product_info.dart`; `CliBranding` delegates to
+  it, so the GUI reads the same source without importing from `lib/core/cli/` (a layer violation)
+
+**Naming**
+- Completed the Hephaistos → Genaisys rename: Linux/Windows/macOS/web/iOS/Android identifiers,
+  window titles, and the Android package directory
+- Root `TASKS.md` / `VISION.md` / `RULES.md` pointed at a non-existent `.hephaistos/` directory;
+  they now point at `.genaisys/`
+- `pubspec.yaml` description was still the `flutter create` placeholder
+
+**Fixes**
+- `pubspec.yaml` declared an `assets/` directory that no longer existed, breaking `flutter build`
+- Zero analyzer issues under `--fatal-infos --fatal-warnings` (77 → 0): `dart fix` for 73
+  mechanical issues, plus `SizeTransition.axisAlignment` → `alignment`, a spec-agent test fake
+  that never recorded its calls, and two dead test fields
+- Removed unreferenced `lib/ui/desktop/data/mock_workspace_data.dart`
+- Re-established the documented `CLAUDE.md`/`AGENTS.md`/`GEMINI.md` hard link, which had drifted
+  into three separate files
+
+**Public-surface hygiene**
+- `.genaisys/ARCHITECTURE.md` contained an agent's chat reply instead of an architecture document,
+  including an absolute path from the author's machine. It is fed into strategic planning and
+  vision evaluation prompts, so the placeholder text was degrading every planning cycle. Replaced
+  with a real document in the six required sections.
+- Untracked `.claude/settings.local.json`, which held local machine paths despite `.claude/`
+  being gitignored
+- New `local-paths` repo-hygiene job fails CI on absolute developer home paths in tracked files
+- Mirror job now fails closed if any public markdown still links to a stripped internal document
+- `check_cli_import_boundary.sh` flagged `lib/core/legacy/` — a violation previously hidden because
+  the mirror stripped that directory. The Dart architecture test already exempts `lib/core/legacy/`
+  by design (documented back-compat GUI-over-CLI bridge); the shell guard now matches it
+
+---
+
 ### 2026-03-02 — Post-Phase-2i Cleanup
 
 **Fixes**
@@ -181,7 +265,6 @@ All notable changes to Genaisys are documented here. This project follows [Seman
 
 ## Related Documentation
 
-- [Roadmap](docs/project/roadmap.md) — Phased delivery plan and current status
 - [Run Log Schema](docs/reference/run-log-schema.md) — Event catalog
 - [CLI Reference](docs/reference/cli.md) — Complete command documentation
 - [Configuration Reference](docs/reference/configuration-reference.md) — All config keys

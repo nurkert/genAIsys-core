@@ -207,7 +207,7 @@ When a reject occurs, the orchestrator rolls back the working tree in escalating
 2. **Hard reset** — `git reset --hard HEAD` (discard staged + unstaged)
 3. **Clean untracked** — `git clean -fd` (remove untracked files)
 
-Each escalation step is tried in order until the worktree is clean. The final clean state is archived as a stash with an audit entry for forensic inspection. This guarantees the [Clean-End Invariant](../CLAUDE.md#8-unattended-anti-block-invariants) regardless of what the agent wrote.
+Each escalation step is tried in order until the worktree is clean. The final clean state is archived as a stash with an audit entry for forensic inspection. This guarantees the Clean-End Invariant regardless of what the agent wrote.
 
 ---
 

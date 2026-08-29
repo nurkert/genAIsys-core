@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:genaisys/core/agents/agent_runner.dart';
 import 'package:genaisys/core/models/active_task_state.dart';
 import 'package:genaisys/core/project_initializer.dart';
@@ -126,9 +126,6 @@ void main() {
       // Since our _FakeDoneService is a stub that does NOT clear state,
       // the notes written by _applyReviewStage remain visible.
       //
-      // Check the run log for the advisory note write event OR check state.
-      // Advisory notes written to state before markDone is called.
-      final runLogContent = File(layout.runLogPath).readAsStringSync();
       // The advisory notes are written via state.copyWith in _applyReviewStage.
       // We check the state for the persisted notes.
       expect(
@@ -139,29 +136,24 @@ void main() {
     },
   );
 
-  test(
-    'advisory notes do not accumulate when review has no notes',
-    () async {
-      final service = buildService([]); // empty advisory notes
+  test('advisory notes do not accumulate when review has no notes', () async {
+    final service = buildService([]); // empty advisory notes
 
-      await service.run(temp.path, codingPrompt: 'Implement login flow');
+    await service.run(temp.path, codingPrompt: 'Implement login flow');
 
-      final state = stateStore.read();
-      expect(
-        state.activeTask.accumulatedAdvisoryNotes,
-        isEmpty,
-        reason: 'No advisory notes should accumulate when review has none',
-      );
-    },
-  );
+    final state = stateStore.read();
+    expect(
+      state.activeTask.accumulatedAdvisoryNotes,
+      isEmpty,
+      reason: 'No advisory notes should accumulate when review has none',
+    );
+  });
 
   test(
     'advisory notes capped at 6: oldest dropped when exceeding limit',
     () async {
       // Seed 5 existing notes in state.
-      final existingNotes = [
-        'Note 1', 'Note 2', 'Note 3', 'Note 4', 'Note 5',
-      ];
+      final existingNotes = ['Note 1', 'Note 2', 'Note 3', 'Note 4', 'Note 5'];
       stateStore.write(
         stateStore.read().copyWith(
           activeTask: stateStore.read().activeTask.copyWith(
@@ -187,11 +179,17 @@ void main() {
       // The implementation does [...existing, ...new].take(6): so older notes
       // are kept and the newest overflow is dropped.
       // existing=[N1..N5] + new=[N6,N7] → take(6) = [N1,N2,N3,N4,N5,N6].
-      expect(accumulated, contains('Note 6'),
-          reason: 'Note 6 is the 6th item — it should be kept');
+      expect(
+        accumulated,
+        contains('Note 6'),
+        reason: 'Note 6 is the 6th item — it should be kept',
+      );
       // Note 7 exceeds the cap of 6 → dropped.
-      expect(accumulated, isNot(contains('Note 7')),
-          reason: 'Note 7 overflows the cap of 6 — it should be dropped');
+      expect(
+        accumulated,
+        isNot(contains('Note 7')),
+        reason: 'Note 7 overflows the cap of 6 — it should be dropped',
+      );
     },
   );
 }
@@ -200,7 +198,9 @@ void main() {
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
-TaskPipelineResult _buildApproveResult({List<String> advisoryNotes = const []}) {
+TaskPipelineResult _buildApproveResult({
+  List<String> advisoryNotes = const [],
+}) {
   return TaskPipelineResult(
     plan: _specResult(SpecKind.plan),
     spec: _specResult(SpecKind.spec),
@@ -251,20 +251,7 @@ class _FakeTaskPipelineService extends TaskPipelineService {
   }) async => result;
 }
 
-class _FakeReviewService extends ReviewService {
-  @override
-  String recordDecision(
-    String projectRoot, {
-    required String decision,
-    String? note,
-    String? testSummary,
-  }) => super.recordDecision(
-    projectRoot,
-    decision: decision,
-    note: note,
-    testSummary: testSummary,
-  );
-}
+class _FakeReviewService extends ReviewService {}
 
 class _FakeDoneService extends DoneService {
   @override

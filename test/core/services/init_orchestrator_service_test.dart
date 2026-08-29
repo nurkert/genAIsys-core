@@ -1,9 +1,8 @@
 import 'dart:io';
 
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:genaisys/core/agents/agent_runner.dart';
 import 'package:genaisys/core/models/init_orchestration_context.dart';
-import 'package:genaisys/core/models/init_orchestration_result.dart';
 import 'package:genaisys/core/project_layout.dart';
 import 'package:genaisys/core/services/agents/agent_service.dart';
 import 'package:genaisys/core/services/init_orchestrator_service.dart';
@@ -20,7 +19,7 @@ void main() {
 
   tearDown(() => workspace.dispose());
 
-  InitOrchestrationContext _makeCtx({
+  InitOrchestrationContext makeCtx({
     String input = 'Build a task manager app.',
     bool isReinit = false,
     bool overwrite = false,
@@ -37,22 +36,22 @@ void main() {
       final agent = _FakeAgentService.alwaysApprove();
       final service = InitOrchestratorService(agentService: agent);
 
-      final result = await service.run(
-        workspace.root.path,
-        ctx: _makeCtx(),
-      );
+      final result = await service.run(workspace.root.path, ctx: makeCtx());
 
       expect(result.retryCount, 0);
       expect(result.isReinit, isFalse);
 
       final layout = ProjectLayout(workspace.root.path);
-      expect(result.writtenPaths, containsAll([
-        layout.visionPath,
-        layout.architecturePath,
-        layout.tasksPath,
-        layout.configPath,
-        layout.rulesPath,
-      ]));
+      expect(
+        result.writtenPaths,
+        containsAll([
+          layout.visionPath,
+          layout.architecturePath,
+          layout.tasksPath,
+          layout.configPath,
+          layout.rulesPath,
+        ]),
+      );
       expect(result.writtenPaths.length, 5);
 
       for (final path in result.writtenPaths) {
@@ -64,25 +63,28 @@ void main() {
       final agent = _FakeAgentService.alwaysApprove();
       final service = InitOrchestratorService(agentService: agent);
 
-      await service.run(workspace.root.path, ctx: _makeCtx());
+      await service.run(workspace.root.path, ctx: makeCtx());
 
       final log = File(workspace.layout.runLogPath).readAsStringSync();
       expect(log, contains('init_orchestration_complete'));
     });
 
-    test('run-log contains init_stage_start x6 and init_stage_complete x6', () async {
-      final agent = _FakeAgentService.alwaysApprove();
-      final service = InitOrchestratorService(agentService: agent);
+    test(
+      'run-log contains init_stage_start x6 and init_stage_complete x6',
+      () async {
+        final agent = _FakeAgentService.alwaysApprove();
+        final service = InitOrchestratorService(agentService: agent);
 
-      await service.run(workspace.root.path, ctx: _makeCtx());
+        await service.run(workspace.root.path, ctx: makeCtx());
 
-      final log = File(workspace.layout.runLogPath).readAsStringSync();
-      final startCount = 'init_stage_start'.allMatches(log).length;
-      final completeCount = 'init_stage_complete'.allMatches(log).length;
+        final log = File(workspace.layout.runLogPath).readAsStringSync();
+        final startCount = 'init_stage_start'.allMatches(log).length;
+        final completeCount = 'init_stage_complete'.allMatches(log).length;
 
-      expect(startCount, 6);
-      expect(completeCount, 6);
-    });
+        expect(startCount, 6);
+        expect(completeCount, 6);
+      },
+    );
   });
 
   group('retry on verification reject', () {
@@ -90,10 +92,7 @@ void main() {
       final agent = _FakeAgentService.rejectOnFirstVerification();
       final service = InitOrchestratorService(agentService: agent);
 
-      final result = await service.run(
-        workspace.root.path,
-        ctx: _makeCtx(),
-      );
+      final result = await service.run(workspace.root.path, ctx: makeCtx());
 
       expect(result.retryCount, 1);
       expect(result.writtenPaths.length, 5);
@@ -103,10 +102,7 @@ void main() {
       final agent = _FakeAgentService.alwaysReject();
       final service = InitOrchestratorService(agentService: agent);
 
-      final result = await service.run(
-        workspace.root.path,
-        ctx: _makeCtx(),
-      );
+      final result = await service.run(workspace.root.path, ctx: makeCtx());
 
       // retryCount exceeds _maxRetries (2) → abort
       expect(result.writtenPaths, isEmpty);
@@ -116,7 +112,7 @@ void main() {
       final agent = _FakeAgentService.rejectOnFirstVerification();
       final service = InitOrchestratorService(agentService: agent);
 
-      await service.run(workspace.root.path, ctx: _makeCtx());
+      await service.run(workspace.root.path, ctx: makeCtx());
 
       final log = File(workspace.layout.runLogPath).readAsStringSync();
       expect(log, contains('init_orchestration_retry'));
@@ -124,19 +120,19 @@ void main() {
   });
 
   group('agent failure', () {
-    test('failure in vision stage → init_stage_failed, no files written', () async {
-      final agent = _FakeAgentService.failOn('vision');
-      final service = InitOrchestratorService(agentService: agent);
+    test(
+      'failure in vision stage → init_stage_failed, no files written',
+      () async {
+        final agent = _FakeAgentService.failOn('vision');
+        final service = InitOrchestratorService(agentService: agent);
 
-      final result = await service.run(
-        workspace.root.path,
-        ctx: _makeCtx(),
-      );
+        final result = await service.run(workspace.root.path, ctx: makeCtx());
 
-      expect(result.writtenPaths, isEmpty);
-      final log = File(workspace.layout.runLogPath).readAsStringSync();
-      expect(log, contains('init_stage_failed'));
-    });
+        expect(result.writtenPaths, isEmpty);
+        final log = File(workspace.layout.runLogPath).readAsStringSync();
+        expect(log, contains('init_stage_failed'));
+      },
+    );
   });
 
   group('code fence stripping', () {
@@ -150,7 +146,7 @@ void main() {
       );
       final service = InitOrchestratorService(agentService: agent);
 
-      await service.run(workspace.root.path, ctx: _makeCtx());
+      await service.run(workspace.root.path, ctx: makeCtx());
 
       final layout = ProjectLayout(workspace.root.path);
       final visionContent = File(layout.visionPath).readAsStringSync();
@@ -171,7 +167,7 @@ void main() {
       );
       final service = InitOrchestratorService(agentService: agent);
 
-      await service.run(workspace.root.path, ctx: _makeCtx());
+      await service.run(workspace.root.path, ctx: makeCtx());
 
       final layout = ProjectLayout(workspace.root.path);
       final configContent = File(layout.configPath).readAsStringSync();
@@ -189,31 +185,35 @@ void main() {
       );
       final service = InitOrchestratorService(agentService: agent);
 
-      await service.run(workspace.root.path, ctx: _makeCtx());
+      await service.run(workspace.root.path, ctx: makeCtx());
 
       final layout = ProjectLayout(workspace.root.path);
       final visionContent = File(layout.visionPath).readAsStringSync();
       expect(visionContent, cleanContent);
     });
 
-    test('output with preamble before fence is preserved without stripping', () async {
-      // If there's text before the fence the whole thing is kept (data safety)
-      const withPreamble = 'Here is the content:\n\n```markdown\n# Title\n```';
-      final agent = _FakeAgentService(
-        responseFor: (prompt) {
-          if (prompt.contains('reviewing')) return 'APPROVE';
-          return withPreamble;
-        },
-      );
-      final service = InitOrchestratorService(agentService: agent);
+    test(
+      'output with preamble before fence is preserved without stripping',
+      () async {
+        // If there's text before the fence the whole thing is kept (data safety)
+        const withPreamble =
+            'Here is the content:\n\n```markdown\n# Title\n```';
+        final agent = _FakeAgentService(
+          responseFor: (prompt) {
+            if (prompt.contains('reviewing')) return 'APPROVE';
+            return withPreamble;
+          },
+        );
+        final service = InitOrchestratorService(agentService: agent);
 
-      await service.run(workspace.root.path, ctx: _makeCtx());
+        await service.run(workspace.root.path, ctx: makeCtx());
 
-      final layout = ProjectLayout(workspace.root.path);
-      final visionContent = File(layout.visionPath).readAsStringSync();
-      // Preamble present → no stripping; content unchanged
-      expect(visionContent, withPreamble);
-    });
+        final layout = ProjectLayout(workspace.root.path);
+        final visionContent = File(layout.visionPath).readAsStringSync();
+        // Preamble present → no stripping; content unchanged
+        expect(visionContent, withPreamble);
+      },
+    );
   });
 
   group('re-init', () {
@@ -227,7 +227,7 @@ void main() {
 
       await service.run(
         workspace.root.path,
-        ctx: _makeCtx(isReinit: true, overwrite: false),
+        ctx: makeCtx(isReinit: true, overwrite: false),
       );
 
       expect(File(layout.visionPath).readAsStringSync(), originalContent);
@@ -243,10 +243,13 @@ void main() {
 
       final result = await service.run(
         workspace.root.path,
-        ctx: _makeCtx(isReinit: true, overwrite: true),
+        ctx: makeCtx(isReinit: true, overwrite: true),
       );
 
-      expect(File(layout.visionPath).readAsStringSync(), isNot(originalContent));
+      expect(
+        File(layout.visionPath).readAsStringSync(),
+        isNot(originalContent),
+      );
       expect(result.writtenPaths, contains(layout.visionPath));
     });
   });
@@ -266,8 +269,6 @@ class _FakeAgentService extends AgentService {
 
   final String Function(String prompt) _responseFor;
   final int Function(String prompt) _exitCodeFor;
-
-  int _verificationCallCount = 0;
 
   /// All stages approve.
   factory _FakeAgentService.alwaysApprove() => _FakeAgentService(

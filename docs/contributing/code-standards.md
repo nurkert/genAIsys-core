@@ -56,6 +56,13 @@ Think twice before adding a new library:
 
 All code, comments, logs, task specs, and internal artifacts must be in English.
 
+## No Local Absolute Paths
+
+Never commit an absolute path from your machine (`/Users/<you>/…`, `/home/<you>/…`). Use a
+relative path, or a placeholder such as `/Users/you/…` in documentation and tests. The
+`local-paths` repo-hygiene job fails CI on violations — everything in this repository is
+published to the public mirror.
+
 ## Atomic Commits
 
 Keep commits focused:
@@ -70,3 +77,4 @@ Keep commits focused:
 - [Development Setup](development-setup.md) — Build and test setup
 - [Testing Guidelines](testing-guidelines.md) — Test conventions
 - [Architecture Overview](../architecture/overview.md) — Layer boundaries
+- [Releasing](releasing.md) — Version tags, multi-platform builds, branding assets

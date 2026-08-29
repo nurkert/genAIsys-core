@@ -99,7 +99,7 @@ extension _AgentServiceRunLog on AgentService {
         'root': projectRoot,
         'provider': provider,
         'role': role,
-        if (blocked != null) ...blocked,
+        ...?blocked,
       },
     );
   }

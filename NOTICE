@@ -11,7 +11,7 @@ json_annotation     BSD 3-Clause Copyright (c) 2017 Dart project authors
 window_manager      MIT          Copyright (c) 2021 leanflutter
 desktop_multi_window MIT         Copyright (c) 2022 leanflutter
 fl_chart            MIT          Copyright (c) 2019 ImaNNeoFighT
-phosphor_flutter    MIT          Copyright (c) 2021 Phosphor Icons
+phosphor_icons      MIT          Copyright (c) 2021 Phosphor Icons
 flutter_markdown_plus MIT        Copyright (c) Flutter community
 file_selector       BSD 3-Clause Copyright (c) 2020 The Flutter Authors
 meta                BSD 3-Clause Copyright (c) 2012 Dart project authors

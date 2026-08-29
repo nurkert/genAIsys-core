@@ -6,6 +6,7 @@ part of '../git_service.dart';
 
 /// Branch, merge, and checkout operations for [GitServiceImpl].
 mixin _GitBranchOps on _GitSharedState {
+  @override
   bool branchExists(String path, String branch) {
     final trimmed = branch.trim();
     if (trimmed.isEmpty) {
@@ -126,8 +127,12 @@ mixin _GitBranchOps on _GitSharedState {
   }
 
   bool hasRebaseInProgress(String path) {
-    final result =
-        _runGit(path, ['rev-parse', '-q', '--verify', 'REBASE_HEAD']);
+    final result = _runGit(path, [
+      'rev-parse',
+      '-q',
+      '--verify',
+      'REBASE_HEAD',
+    ]);
     return result.exitCode == 0;
   }
 }

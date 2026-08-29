@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:genaisys/core/agents/agent_runner.dart';
 import 'package:genaisys/core/config/project_config.dart';
 import 'package:genaisys/core/models/review_bundle.dart';
@@ -36,12 +36,14 @@ void main() {
     layout = ProjectLayout(temp.path);
     // Seed an active CORE task in state so the category resolves correctly.
     final store = StateStore(layout.statePath);
-    store.write(store.read().copyWith(
-      activeTask: store.read().activeTask.copyWith(
-        id: 'add-auth-1',
-        title: 'Add auth',
+    store.write(
+      store.read().copyWith(
+        activeTask: store.read().activeTask.copyWith(
+          id: 'add-auth-1',
+          title: 'Add auth',
+        ),
       ),
-    ));
+    );
   });
 
   tearDown(() => temp.deleteSync(recursive: true));
@@ -99,7 +101,11 @@ void main() {
         gateEnabled: true,
       );
 
-      expect(result.review, isNotNull, reason: 'Gate should produce a review result');
+      expect(
+        result.review,
+        isNotNull,
+        reason: 'Gate should produce a review result',
+      );
       expect(result.review!.decision, ReviewDecision.reject);
       expect(
         result.review!.response.stdout,
@@ -172,18 +178,12 @@ class _GateTestPipeline extends TaskPipelineService {
   _GateTestPipeline({
     required this.injectedConfig,
     required this.changedPaths,
-    SpecAgentService? specAgentService,
-    CodingAgentService? codingAgentService,
-    ReviewAgentService? reviewAgentService,
-    FakeGitService? gitService,
-    ReviewBundleService? reviewBundleService,
-  }) : super(
-         specAgentService: specAgentService,
-         codingAgentService: codingAgentService,
-         reviewAgentService: reviewAgentService,
-         gitService: gitService,
-         reviewBundleService: reviewBundleService,
-       );
+    super.specAgentService,
+    super.codingAgentService,
+    super.reviewAgentService,
+    FakeGitService? super.gitService,
+    super.reviewBundleService,
+  });
 
   final ProjectConfig injectedConfig;
   final List<String> changedPaths;
@@ -244,7 +244,11 @@ class _GateTestPipeline extends TaskPipelineService {
           final coding = CodingAgentResult(
             path: '/tmp/attempt.txt',
             usedFallback: false,
-            response: const AgentResponse(exitCode: 0, stdout: 'done', stderr: ''),
+            response: const AgentResponse(
+              exitCode: 0,
+              stdout: 'done',
+              stderr: '',
+            ),
           );
           return TaskPipelineResult(
             plan: plan,
@@ -281,7 +285,10 @@ class _GateTestPipeline extends TaskPipelineService {
     );
   }
 
-  Future<SpecAgentResult> _generateSpec(String projectRoot, SpecKind kind) async {
+  Future<SpecAgentResult> _generateSpec(
+    String projectRoot,
+    SpecKind kind,
+  ) async {
     return SpecAgentResult(
       path: '/tmp/${kind.name}.md',
       kind: kind,

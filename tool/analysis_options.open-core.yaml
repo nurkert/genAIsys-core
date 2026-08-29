@@ -1,3 +1,0 @@
-# Open-core analysis options — used by the GitLab→GitHub mirror pipeline.
-# Replaces analysis_options.yaml in the public snapshot (lints, not flutter_lints).
-include: package:lints/recommended.yaml

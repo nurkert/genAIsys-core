@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Genaisys
+GenericName=AI Orchestration
+Comment=Sovereign orchestration for AI-assisted software delivery
+Exec=genaisys-gui %U
+Icon=genaisys
+Terminal=false
+Categories=Development;IDE;
+Keywords=AI;agent;orchestration;git;automation;
+StartupWMClass=genaisys

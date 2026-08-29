@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="base" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#262626"/>
+      <stop offset="1" stop-color="#111111"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFC169"/>
+      <stop offset="0.45" stop-color="#D9B56D"/>
+      <stop offset="1" stop-color="#8D5C38"/>
+    </linearGradient>
+    <linearGradient id="ember" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFC169"/>
+      <stop offset="1" stop-color="#FF5A2A"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#base)"/>
+  <rect x="1" y="1" width="510" height="510" rx="111" fill="none" stroke="#D9B56D" stroke-opacity="0.22" stroke-width="2"/>
+
+  <!-- anvil: the forge that shapes the work -->
+  <g fill="url(#metal)">
+    <!-- top face + horn -->
+    <path d="
+      M 402 196
+      a 14 14 0 0 1 14 14
+      v 26
+      a 14 14 0 0 1 -14 14
+      h -286
+      c -34 0 -58 -12 -74 -28
+      c -6 -6 -6 -12 0 -18
+      c 16 -16 40 -28 74 -28
+      z"/>
+    <!-- waist -->
+    <path d="M 214 250 h 96 l 22 74 h -140 z"/>
+    <!-- base -->
+    <path d="
+      M 158 320
+      h 208
+      a 14 14 0 0 1 14 14
+      v 26
+      a 14 14 0 0 1 -14 14
+      h -208
+      a 14 14 0 0 1 -14 -14
+      v -26
+      a 14 14 0 0 1 14 -14
+      z"/>
+  </g>
+
+  <!-- ember sparks rising off the strike point -->
+  <circle cx="268" cy="140" r="24" fill="url(#ember)"/>
+  <circle cx="340" cy="116" r="12" fill="url(#ember)" opacity="0.85"/>
+  <circle cx="198" cy="122" r="10" fill="url(#ember)" opacity="0.7"/>
+  <circle cx="302" cy="80"  r="8"  fill="url(#ember)" opacity="0.55"/>
+</svg>

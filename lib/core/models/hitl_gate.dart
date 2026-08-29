@@ -6,6 +6,7 @@
 ///
 /// The orchestrator writes a [HitlGateInfo] to disk when it reaches a
 /// configured gate point, then polls for a [HitlDecision] before continuing.
+library;
 
 enum HitlGateEvent {
   afterTaskDone,

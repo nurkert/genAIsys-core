@@ -71,3 +71,11 @@ app.*.map.json
 # Android build artifacts
 /android/.gradle/
 /android/local.properties
+
+# Release build outputs (see .github/workflows/release.yml)
+/genaisys-cli-*
+/genaisys_*.deb
+/genaisys-linux-x64.tar.gz
+/genaisys-macos-arm64.zip
+/genaisys-windows-x64.zip
+/deb-root/

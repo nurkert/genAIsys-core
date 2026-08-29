@@ -28,3 +28,13 @@ jobs:
 
       - name: Check CLI import boundary
         run: bash .github/scripts/check_cli_import_boundary.sh
+
+  local-paths:
+    name: Detect Local Absolute Paths
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Fail on developer home paths in tracked files
+        run: bash .github/scripts/check_no_local_paths.sh

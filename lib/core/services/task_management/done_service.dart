@@ -37,15 +37,18 @@ class DoneService {
   }) : _gitService = gitService ?? GitService(),
        _reviewEvidenceValidator =
            reviewEvidenceValidator ?? ReviewEvidenceValidator(),
-       _deliveryPreflightService = deliveryPreflightService ??
+       _deliveryPreflightService =
+           deliveryPreflightService ??
            DeliveryPreflightService(gitService: gitService),
-       _mergeConflictCoordinator = mergeConflictCoordinator ??
+       _mergeConflictCoordinator =
+           mergeConflictCoordinator ??
            MergeConflictCoordinator(
              gitService: gitService,
              mergeConflictResolver: mergeConflictResolver,
              mergeConflictMaxAttempts: mergeConflictMaxAttempts,
            ),
-       _unattendedBlockService = unattendedBlockService ??
+       _unattendedBlockService =
+           unattendedBlockService ??
            UnattendedBlockService(gitService: gitService),
        _specAgentService = specAgentService ?? SpecAgentService();
 
@@ -56,10 +59,7 @@ class DoneService {
   final UnattendedBlockService _unattendedBlockService;
   final SpecAgentService _specAgentService;
 
-  Future<String> markDone(
-    String projectRoot, {
-    bool force = false,
-  }) async {
+  Future<String> markDone(String projectRoot, {bool force = false}) async {
     final layout = ProjectLayout(projectRoot);
     _ensureTasksFile(layout);
 
@@ -125,11 +125,7 @@ class DoneService {
       RunLogStore(layout.runLogPath).append(
         event: 'task_done',
         message: 'Marked task as done',
-        data: {
-          'root': projectRoot,
-          'task': activeTitle,
-          'task_id': match.id,
-        },
+        data: {'root': projectRoot, 'task': activeTitle, 'task_id': match.id},
       );
       RunLogStore(layout.runLogPath).append(
         event: 'task_already_done',
@@ -153,11 +149,7 @@ class DoneService {
     RunLogStore(layout.runLogPath).append(
       event: 'task_done',
       message: 'Marked task as done',
-      data: {
-        'root': projectRoot,
-        'task': activeTitle,
-        'task_id': match.id,
-      },
+      data: {'root': projectRoot, 'task': activeTitle, 'task_id': match.id},
     );
 
     // Feature E: Post-done AC verification (non-blocking, opt-in).
@@ -303,9 +295,7 @@ class DoneService {
       final state = store.read();
       store.write(
         state.copyWith(
-          activeTask: state.activeTask.copyWith(
-            mergeInProgress: inProgress,
-          ),
+          activeTask: state.activeTask.copyWith(mergeInProgress: inProgress),
           lastUpdated: DateTime.now().toUtc().toIso8601String(),
         ),
       );
@@ -585,8 +575,7 @@ class DoneService {
     if (newCount >= threshold) {
       RunLogStore(layout.runLogPath).append(
         event: 'consecutive_push_failures_blocked',
-        message:
-            'Blocking task after $newCount consecutive push failures',
+        message: 'Blocking task after $newCount consecutive push failures',
         data: {
           'root': projectRoot,
           'base_branch': baseBranch,
@@ -628,9 +617,7 @@ class DoneService {
       store.write(
         state.copyWith(
           lastUpdated: DateTime.now().toUtc().toIso8601String(),
-          autopilotRun: state.autopilotRun.copyWith(
-            consecutiveFailures: 0,
-          ),
+          autopilotRun: state.autopilotRun.copyWith(consecutiveFailures: 0),
         ),
       );
     }
@@ -696,7 +683,7 @@ class DoneService {
         if (state.activeTaskId != null && state.activeTaskId!.trim().isNotEmpty)
           'task_id': state.activeTaskId!.trim(),
         if (subtaskId != null && subtaskId.isNotEmpty) 'subtask_id': subtaskId,
-        if (diagnostics != null) ...diagnostics,
+        ...?diagnostics,
       },
     );
 
@@ -826,7 +813,10 @@ class DoneService {
     String taskTitle,
   ) async {
     try {
-      final slug = taskTitle.trim().toLowerCase().replaceAll(RegExp(r'\s+'), '-');
+      final slug = taskTitle.trim().toLowerCase().replaceAll(
+        RegExp(r'\s+'),
+        '-',
+      );
       final specFile = File('${layout.taskSpecsDir}/$slug.md');
       if (!specFile.existsSync()) return;
 
@@ -845,7 +835,8 @@ class DoneService {
         event: result.passed
             ? 'post_done_ac_check_passed'
             : 'post_done_ac_check_failed',
-        message: result.reason ??
+        message:
+            result.reason ??
             (result.passed ? 'All ACs met' : 'AC check inconclusive'),
         data: {
           'root': projectRoot,

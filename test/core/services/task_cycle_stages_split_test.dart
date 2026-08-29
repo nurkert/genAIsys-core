@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:genaisys/core/agents/agent_runner.dart';
 import 'package:genaisys/core/models/active_task_state.dart';
 import 'package:genaisys/core/models/subtask_execution_state.dart';
@@ -44,7 +44,10 @@ void main() {
     );
   }
 
-  void setSubtaskState(String current, {Map<String, int> splitAttempts = const {}}) {
+  void setSubtaskState(
+    String current, {
+    Map<String, int> splitAttempts = const {},
+  }) {
     stateStore.write(
       stateStore.read().copyWith(
         subtaskExecution: SubtaskExecutionState(
@@ -123,56 +126,53 @@ void main() {
     },
   );
 
-  test(
-    'reject without complexity keyword follows normal retry path',
-    () async {
-      writeConfig(refinementEnabled: true);
-      setSubtaskState('Fix null pointer in auth handler');
+  test('reject without complexity keyword follows normal retry path', () async {
+    writeConfig(refinementEnabled: true);
+    setSubtaskState('Fix null pointer in auth handler');
 
-      final pipeline = _FakeTaskPipelineService(
-        _buildPipelineResult(
-          review: ReviewAgentResult(
-            decision: ReviewDecision.reject,
-            response: const AgentResponse(
-              exitCode: 0,
-              stdout: 'REJECT\nThe null check is missing in the login method.',
-              stderr: '',
-            ),
-            usedFallback: false,
+    final pipeline = _FakeTaskPipelineService(
+      _buildPipelineResult(
+        review: ReviewAgentResult(
+          decision: ReviewDecision.reject,
+          response: const AgentResponse(
+            exitCode: 0,
+            stdout: 'REJECT\nThe null check is missing in the login method.',
+            stderr: '',
           ),
+          usedFallback: false,
         ),
-      );
+      ),
+    );
 
-      var splitCalled = false;
-      final specAgentService = SpecAgentService(
-        agentService: _SplitAgentService(
-          splitResult: ['Should not be called'],
-          onCall: () => splitCalled = true,
-        ),
-      );
+    var splitCalled = false;
+    final specAgentService = SpecAgentService(
+      agentService: _SplitAgentService(
+        splitResult: ['Should not be called'],
+        onCall: () => splitCalled = true,
+      ),
+    );
 
-      final service = TaskCycleService(
-        taskPipelineService: pipeline,
-        reviewService: _FakeReviewService(),
-        gitService: null,
-        doneService: _FakeDoneService(),
-        specAgentService: specAgentService,
-        maxReviewRetries: 5,
-      );
+    final service = TaskCycleService(
+      taskPipelineService: pipeline,
+      reviewService: _FakeReviewService(),
+      gitService: null,
+      doneService: _FakeDoneService(),
+      specAgentService: specAgentService,
+      maxReviewRetries: 5,
+    );
 
-      final result = await service.run(
-        temp.path,
-        codingPrompt: 'Do work',
-        isSubtask: true,
-        subtaskDescription: 'Fix null pointer in auth handler',
-      );
+    final result = await service.run(
+      temp.path,
+      codingPrompt: 'Do work',
+      isSubtask: true,
+      subtaskDescription: 'Fix null pointer in auth handler',
+    );
 
-      // No complexity keyword — split must NOT be called.
-      expect(splitCalled, isFalse);
-      // Normal retry increment.
-      expect(result.retryCount, 1);
-    },
-  );
+    // No complexity keyword — split must NOT be called.
+    expect(splitCalled, isFalse);
+    // Normal retry increment.
+    expect(result.retryCount, 1);
+  });
 
   test(
     'reactive split skipped when subtask was already split once (splitAttempts guard)',
@@ -280,53 +280,50 @@ void main() {
     },
   );
 
-  test(
-    'reactive split skipped when isSubtask is false',
-    () async {
-      writeConfig(refinementEnabled: true);
+  test('reactive split skipped when isSubtask is false', () async {
+    writeConfig(refinementEnabled: true);
 
-      final pipeline = _FakeTaskPipelineService(
-        _buildPipelineResult(
-          review: ReviewAgentResult(
-            decision: ReviewDecision.reject,
-            response: const AgentResponse(
-              exitCode: 0,
-              stdout: 'REJECT\nScope too large, please split and decompose.',
-              stderr: '',
-            ),
-            usedFallback: false,
+    final pipeline = _FakeTaskPipelineService(
+      _buildPipelineResult(
+        review: ReviewAgentResult(
+          decision: ReviewDecision.reject,
+          response: const AgentResponse(
+            exitCode: 0,
+            stdout: 'REJECT\nScope too large, please split and decompose.',
+            stderr: '',
           ),
+          usedFallback: false,
         ),
-      );
+      ),
+    );
 
-      var splitCalled = false;
-      final specAgentService = SpecAgentService(
-        agentService: _SplitAgentService(
-          splitResult: ['Should not be returned'],
-          onCall: () => splitCalled = true,
-        ),
-      );
+    var splitCalled = false;
+    final specAgentService = SpecAgentService(
+      agentService: _SplitAgentService(
+        splitResult: ['Should not be returned'],
+        onCall: () => splitCalled = true,
+      ),
+    );
 
-      final service = TaskCycleService(
-        taskPipelineService: pipeline,
-        reviewService: _FakeReviewService(),
-        gitService: null,
-        doneService: _FakeDoneService(),
-        specAgentService: specAgentService,
-        maxReviewRetries: 5,
-      );
+    final service = TaskCycleService(
+      taskPipelineService: pipeline,
+      reviewService: _FakeReviewService(),
+      gitService: null,
+      doneService: _FakeDoneService(),
+      specAgentService: specAgentService,
+      maxReviewRetries: 5,
+    );
 
-      // isSubtask: false — split should not apply.
-      final result = await service.run(
-        temp.path,
-        codingPrompt: 'Do work',
-        isSubtask: false,
-      );
+    // isSubtask: false — split should not apply.
+    final result = await service.run(
+      temp.path,
+      codingPrompt: 'Do work',
+      isSubtask: false,
+    );
 
-      expect(splitCalled, isFalse);
-      expect(result.retryCount, 1);
-    },
-  );
+    expect(splitCalled, isFalse);
+    expect(result.retryCount, 1);
+  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -375,20 +372,7 @@ class _FakeTaskPipelineService extends TaskPipelineService {
   }) async => result;
 }
 
-class _FakeReviewService extends ReviewService {
-  @override
-  String recordDecision(
-    String projectRoot, {
-    required String decision,
-    String? note,
-    String? testSummary,
-  }) => super.recordDecision(
-    projectRoot,
-    decision: decision,
-    note: note,
-    testSummary: testSummary,
-  );
-}
+class _FakeReviewService extends ReviewService {}
 
 class _FakeDoneService extends DoneService {
   @override
@@ -403,13 +387,9 @@ class _FakeDoneService extends DoneService {
   }) => 'Alpha';
 }
 
-
 /// Agent service that returns a pre-configured split result as a numbered list.
 class _SplitAgentService extends AgentService {
-  _SplitAgentService({
-    required this.splitResult,
-    this.onCall,
-  });
+  _SplitAgentService({required this.splitResult, this.onCall});
 
   final List<String> splitResult;
   final void Function()? onCall;

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:genaisys/core/agents/agent_runner.dart';
 import 'package:genaisys/core/models/active_task_state.dart';
 import 'package:genaisys/core/models/subtask_execution_state.dart';
@@ -85,11 +85,7 @@ void main() {
 
       final result = await buildService(
         forensics: _FakeForensicsService(ForensicClassification.specTooLarge),
-      ).run(
-        temp.path,
-        codingPrompt: 'Do work',
-        isSubtask: true,
-      );
+      ).run(temp.path, codingPrompt: 'Do work', isSubtask: true);
 
       // Narrowing succeeded — task is NOT blocked.
       expect(result.taskBlocked, isFalse);
@@ -105,18 +101,11 @@ void main() {
     '2nd-pass narrowing: hard block when queue already within maxSize',
     () async {
       writeConfig(narrowingMaxSize: 3);
-      seedState(
-        queue: ['A', 'B'],
-        forensicRecoveryAttempted: true,
-      );
+      seedState(queue: ['A', 'B'], forensicRecoveryAttempted: true);
 
       final result = await buildService(
         forensics: _FakeForensicsService(ForensicClassification.specTooLarge),
-      ).run(
-        temp.path,
-        codingPrompt: 'Do work',
-        isSubtask: true,
-      );
+      ).run(temp.path, codingPrompt: 'Do work', isSubtask: true);
 
       // Queue is small (2 <= 3) — narrowing cannot help → hard block.
       expect(result.taskBlocked, isTrue);
@@ -137,14 +126,11 @@ void main() {
 
       await buildService(
         forensics: _FakeForensicsService(ForensicClassification.specTooLarge),
-      ).run(
-        temp.path,
-        codingPrompt: 'Do work',
-        isSubtask: true,
-      );
+      ).run(temp.path, codingPrompt: 'Do work', isSubtask: true);
 
-      final runLogLines =
-          File(layout.runLogPath).readAsStringSync().split('\n');
+      final runLogLines = File(
+        layout.runLogPath,
+      ).readAsStringSync().split('\n');
       final events = runLogLines
           .where((l) => l.trim().isNotEmpty)
           .map((l) {
@@ -178,11 +164,7 @@ void main() {
       // called instead of _tryForcedNarrowing.
       final result = await buildService(
         forensics: _FakeForensicsService(ForensicClassification.specTooLarge),
-      ).run(
-        temp.path,
-        codingPrompt: 'Do work',
-        isSubtask: true,
-      );
+      ).run(temp.path, codingPrompt: 'Do work', isSubtask: true);
 
       // Task is NOT blocked on the first forensic pass (recovery attempted).
       expect(result.taskBlocked, isFalse);
@@ -211,13 +193,10 @@ void main() {
 
       // Forensics returns a non-specTooLarge classification.
       final result = await buildService(
-        forensics:
-            _FakeForensicsService(ForensicClassification.persistentTestFailure),
-      ).run(
-        temp.path,
-        codingPrompt: 'Do work',
-        isSubtask: true,
-      );
+        forensics: _FakeForensicsService(
+          ForensicClassification.persistentTestFailure,
+        ),
+      ).run(temp.path, codingPrompt: 'Do work', isSubtask: true);
 
       // Non-specTooLarge → narrowing not applicable → hard block.
       expect(result.taskBlocked, isTrue);
@@ -286,20 +265,7 @@ class _FakeTaskPipelineService extends TaskPipelineService {
   }) async => result;
 }
 
-class _FakeReviewService extends ReviewService {
-  @override
-  String recordDecision(
-    String projectRoot, {
-    required String decision,
-    String? note,
-    String? testSummary,
-  }) => super.recordDecision(
-    projectRoot,
-    decision: decision,
-    note: note,
-    testSummary: testSummary,
-  );
-}
+class _FakeReviewService extends ReviewService {}
 
 class _FakeDoneService extends DoneService {
   int blockCalls = 0;

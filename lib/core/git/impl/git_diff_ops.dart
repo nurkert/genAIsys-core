@@ -6,6 +6,7 @@ part of '../git_service.dart';
 
 /// Diff and working-tree status operations for [GitServiceImpl].
 mixin _GitDiffOps on _GitSharedState {
+  @override
   bool hasChanges(String path) {
     // Direct porcelain scan: does NOT skip `?? dir/` entries so untracked
     // directories are caught without the fragile ls-files expansion that
@@ -18,8 +19,9 @@ mixin _GitDiffOps on _GitSharedState {
       if (line.trim().isEmpty) continue;
       final entry = line.length > 3 ? line.substring(3).trim() : '';
       if (entry.isEmpty) continue;
-      final resolved =
-          entry.contains(' -> ') ? entry.split(' -> ').last.trim() : entry;
+      final resolved = entry.contains(' -> ')
+          ? entry.split(' -> ').last.trim()
+          : entry;
       if (resolved.isEmpty) continue;
       if (_isInternalPath(resolved)) continue;
       return true;

@@ -25,14 +25,15 @@ class ReviewBundleService {
     // SHA is still reachable.  After force-push or history-rewrite the SHA may
     // no longer exist, which silently produces an empty diff.  Fall back to
     // the working-tree diff in that case.
-    final useDelta = sinceCommitSha != null &&
+    final useDelta =
+        sinceCommitSha != null &&
         _gitService.headCommitSha(projectRoot) != sinceCommitSha &&
-        _gitService.isCommitReachable(projectRoot, sinceCommitSha!);
+        _gitService.isCommitReachable(projectRoot, sinceCommitSha);
     final diffSummary = useDelta
-        ? _gitService.diffSummaryBetween(projectRoot, sinceCommitSha!, 'HEAD')
+        ? _gitService.diffSummaryBetween(projectRoot, sinceCommitSha, 'HEAD')
         : _gitService.diffSummary(projectRoot);
     final diffPatch = useDelta
-        ? _gitService.diffPatchBetween(projectRoot, sinceCommitSha!, 'HEAD')
+        ? _gitService.diffPatchBetween(projectRoot, sinceCommitSha, 'HEAD')
         : _gitService.diffPatch(projectRoot);
     final normalizedTestSummary = _normalizeOptional(testSummary);
 

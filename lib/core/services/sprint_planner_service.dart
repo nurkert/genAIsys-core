@@ -5,7 +5,6 @@
 import 'dart:io';
 
 import '../config/project_config.dart';
-import '../models/task_draft.dart';
 import '../project_layout.dart';
 import '../storage/atomic_file_write.dart';
 import '../storage/run_log_store.dart';
@@ -205,8 +204,9 @@ class SprintPlannerService {
     final file = File(tasksPath);
     final existing = file.existsSync() ? file.readAsStringSync() : '';
     final header = '\n## Sprint $sprintNumber\n';
-    final updated =
-        existing.trimRight().isEmpty ? header.trimLeft() : '$existing\n$header';
+    final updated = existing.trimRight().isEmpty
+        ? header.trimLeft()
+        : '$existing\n$header';
     AtomicFileWrite.writeStringSync(tasksPath, updated);
   }
 }

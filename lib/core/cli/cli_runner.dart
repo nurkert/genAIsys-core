@@ -10,7 +10,6 @@ import 'dart:io' as io;
 import '../app/app.dart';
 import '../app/dto/diagnostics_dto.dart';
 import '../app/use_cases/diagnostics_use_cases.dart';
-import '../project_layout.dart';
 import '../security/redaction_service.dart';
 import '../services/autopilot/autopilot_supervisor_service.dart';
 import '../settings/application_settings.dart';
@@ -281,9 +280,7 @@ class CliRunner {
           _stderr.writeln('Unknown command: $command');
           final suggestions = CommandHelpRegistry.suggest(command);
           if (suggestions.isNotEmpty) {
-            _stderr.writeln(
-              'Did you mean: ${suggestions.join(', ')}?',
-            );
+            _stderr.writeln('Did you mean: ${suggestions.join(', ')}?');
           }
         }
         exitCode = 64;

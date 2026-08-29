@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:test/test.dart';
-import 'package:genaisys/core/config/project_config.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:genaisys/core/project_layout.dart';
 import 'package:genaisys/core/services/task_management/done_service.dart';
 import 'package:genaisys/core/services/agents/spec_agent_service.dart';
@@ -134,11 +133,17 @@ void main() {
       final result = await service.markDone(workspace.root.path);
       expect(result, title);
 
-      expect(fakeSpec.checkCalled, isTrue,
-          reason: 'checkImplementationAgainstAc should have been called');
+      expect(
+        fakeSpec.checkCalled,
+        isTrue,
+        reason: 'checkImplementationAgainstAc should have been called',
+      );
       final events = readRunLogEvents();
-      expect(events, contains('post_done_ac_check_passed'),
-          reason: 'A passing check should emit post_done_ac_check_passed');
+      expect(
+        events,
+        contains('post_done_ac_check_passed'),
+        reason: 'A passing check should emit post_done_ac_check_passed',
+      );
     },
   );
 
@@ -158,12 +163,18 @@ void main() {
 
       // AC check failure must not abort markDone.
       final result = await service.markDone(workspace.root.path);
-      expect(result, title,
-          reason: 'markDone must succeed even when AC check fails');
+      expect(
+        result,
+        title,
+        reason: 'markDone must succeed even when AC check fails',
+      );
 
       final events = readRunLogEvents();
-      expect(events, contains('post_done_ac_check_failed'),
-          reason: 'A failing check should emit post_done_ac_check_failed');
+      expect(
+        events,
+        contains('post_done_ac_check_failed'),
+        reason: 'A failing check should emit post_done_ac_check_failed',
+      );
     },
   );
 
@@ -184,8 +195,11 @@ void main() {
       final result = await service.markDone(workspace.root.path);
       expect(result, title);
 
-      expect(fakeSpec.checkCalled, isFalse,
-          reason: 'specAgent must not be called when no spec file exists');
+      expect(
+        fakeSpec.checkCalled,
+        isFalse,
+        reason: 'specAgent must not be called when no spec file exists',
+      );
       final events = readRunLogEvents();
       expect(
         events.where((e) => e.startsWith('post_done_ac_check')).toList(),
@@ -211,8 +225,12 @@ void main() {
 
       await service.markDone(workspace.root.path);
 
-      expect(fakeSpec.checkCalled, isFalse,
-          reason: 'specAgent must not be called when pipelineFinalAcCheckEnabled is false');
+      expect(
+        fakeSpec.checkCalled,
+        isFalse,
+        reason:
+            'specAgent must not be called when pipelineFinalAcCheckEnabled is false',
+      );
       final events = readRunLogEvents();
       expect(
         events.where((e) => e.startsWith('post_done_ac_check')).toList(),
@@ -238,8 +256,11 @@ void main() {
 
       // Must not propagate the exception.
       final result = await service.markDone(workspace.root.path);
-      expect(result, title,
-          reason: 'markDone must succeed even when AC check throws');
+      expect(
+        result,
+        title,
+        reason: 'markDone must succeed even when AC check throws',
+      );
     },
   );
 }
@@ -291,8 +312,10 @@ class _AcCheckDoneService extends DoneService {
     // Mirror the logic from DoneService._runFinalAcCheck.
     try {
       final layout = ProjectLayout(projectRoot);
-      final slug =
-          taskTitle.trim().toLowerCase().replaceAll(RegExp(r'\s+'), '-');
+      final slug = taskTitle.trim().toLowerCase().replaceAll(
+        RegExp(r'\s+'),
+        '-',
+      );
       final specFile = File('${layout.taskSpecsDir}/$slug.md');
       if (!specFile.existsSync()) return;
 
@@ -307,7 +330,8 @@ class _AcCheckDoneService extends DoneService {
         event: result.passed
             ? 'post_done_ac_check_passed'
             : 'post_done_ac_check_failed',
-        message: result.reason ??
+        message:
+            result.reason ??
             (result.passed ? 'All ACs met' : 'AC check inconclusive'),
         data: {
           'root': projectRoot,

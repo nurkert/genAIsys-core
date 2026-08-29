@@ -96,7 +96,7 @@ Genaisys aims to become an increasingly autonomous software delivery system:
 - **Orchestrated Project Bootstrap**: New and existing projects are fully initialized by providing any input document (PDF, text file, raw string). A multi-stage agent pipeline extracts vision, plans architecture, generates backlog and configuration, and verifies all artifacts for consistency. The entire init process follows the same Sovereign Orchestration principles as the regular coding pipeline.
 - **Rewrite Mode**: A long-term goal to completely rewrite existing projects feature-by-feature into a new architecture or language, with automated parity verification against the original.
 - **Security Audit Mode**: Integrated static analysis that automatically creates prioritized security tasks in the backlog.
-- **Open-Core Business Model**: Core engine and CLI under BSL 1.1 (converting to MIT after 3 years). Desktop GUI as a licensed product with tiered pricing from free community to enterprise.
+- **Source-Available Business Model**: The complete product — core engine, CLI, and desktop GUI — is published under BSL 1.1, free for non-commercial and internal business use, converting to an open-source license on the Change Date. Commercial redistribution requires a separate license.
 
 ## Non-Negotiable Invariants
 
@@ -112,8 +112,6 @@ These rules cannot be overridden by any configuration, persona, or pipeline:
 
 ## Related Documentation
 
-- [Roadmap](roadmap.md) — Phased delivery plan and current status
-- [Capability Gaps](capability-gaps.md) — Known limitations and future targets
 - [Orchestration Lifecycle](../concepts/orchestration-lifecycle.md) — How the grand cycle works
 - [Safety System](../concepts/safety-system.md) — Safe-Write, Shell Allowlist, Diff Budget
 - [Agent System](../concepts/agent-system.md) — Agent roles, providers, fallback

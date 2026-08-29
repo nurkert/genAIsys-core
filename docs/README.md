@@ -83,13 +83,11 @@ Exhaustive, searchable details.
 - [Adding CLI Commands](contributing/adding-cli-commands.md) — Handler + presenter pattern
 - [Adding Providers](contributing/adding-providers.md) — AgentRunner interface, registration
 - [Testing Guidelines](contributing/testing-guidelines.md) — CI determinism, resource safety, conventions
-- [Agent Guidelines](contributing/agent-guidelines.md) — Condensed CLAUDE.md for AI agents
+- [Releasing](contributing/releasing.md) — Version tags, multi-platform builds, branding assets
 
 ### [Project](project/) — Vision and roadmap
 
 - [Vision](project/vision.md) — Mission, philosophy, sovereign orchestration
-- [Roadmap](project/roadmap.md) — Phased plan, current Phase 2 status
-- [Capability Gaps](project/capability-gaps.md) — Known gaps, future targets
 
 ### [Glossary](glossary.md) — Terminology reference
 

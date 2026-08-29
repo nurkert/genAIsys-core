@@ -1,7 +1,6 @@
-import 'dart:async';
 import 'dart:io';
 
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:genaisys/core/models/hitl_gate.dart';
 import 'package:genaisys/core/project_layout.dart';
 import 'package:genaisys/core/services/hitl_gate_service.dart';
@@ -22,7 +21,7 @@ void main() {
 
   tearDown(() => workspace.dispose());
 
-  HitlGateInfo _makeGate({
+  HitlGateInfo makeGate({
     HitlGateEvent event = HitlGateEvent.afterTaskDone,
     String? taskId,
     String? taskTitle,
@@ -45,10 +44,7 @@ void main() {
     });
 
     test('returns gate info when gate file is present', () async {
-      final gate = _makeGate(
-        event: HitlGateEvent.beforeSprint,
-        sprintNumber: 2,
-      );
+      final gate = makeGate(event: HitlGateEvent.beforeSprint, sprintNumber: 2);
       // Write gate via waitForDecision but cancel after first poll by writing
       // an approval decision immediately.
       // ignore: unawaited_futures
@@ -71,7 +67,7 @@ void main() {
   group('submitDecision', () {
     test('writes a decision file in key=value format', () async {
       // Open a gate first so submitDecision is valid.
-      final gate = _makeGate();
+      final gate = makeGate();
       // ignore: unawaited_futures
       service.waitForDecision(
         workspace.root.path,
@@ -96,7 +92,7 @@ void main() {
 
     test('reject writes decision=reject', () async {
       // Open a gate first so submitDecision is valid.
-      final gate = _makeGate();
+      final gate = makeGate();
       // ignore: unawaited_futures
       service.waitForDecision(
         workspace.root.path,
@@ -117,7 +113,7 @@ void main() {
 
   group('waitForDecision — approve via decision file', () {
     test('resolves approved when decision file written', () async {
-      final gate = _makeGate();
+      final gate = makeGate();
       final resultFuture = service.waitForDecision(
         workspace.root.path,
         gate: gate,
@@ -140,7 +136,7 @@ void main() {
     });
 
     test('clears gate and decision files after resolution', () async {
-      final gate = _makeGate();
+      final gate = makeGate();
       final resultFuture = service.waitForDecision(
         workspace.root.path,
         gate: gate,
@@ -162,7 +158,7 @@ void main() {
 
   group('waitForDecision — reject via decision file', () {
     test('resolves not-approved when decision=reject', () async {
-      final gate = _makeGate();
+      final gate = makeGate();
       final resultFuture = service.waitForDecision(
         workspace.root.path,
         gate: gate,
@@ -186,7 +182,7 @@ void main() {
 
   group('waitForDecision — timeout auto-approve', () {
     test('auto-approves after timeout elapses', () async {
-      final gate = _makeGate();
+      final gate = makeGate();
       final result = await service.waitForDecision(
         workspace.root.path,
         gate: gate,
@@ -200,7 +196,7 @@ void main() {
     });
 
     test('clears gate file on timeout', () async {
-      final gate = _makeGate();
+      final gate = makeGate();
       await service.waitForDecision(
         workspace.root.path,
         gate: gate,
@@ -214,28 +210,30 @@ void main() {
   });
 
   group('waitForDecision — infinite timeout', () {
-    test('does not auto-approve when timeout is null (resolves on decision)',
-        () async {
-      final gate = _makeGate();
-      final resultFuture = service.waitForDecision(
-        workspace.root.path,
-        gate: gate,
-        heartbeat: () {},
-        pollInterval: const Duration(milliseconds: 20),
-        // timeout: null → infinite wait
-      );
+    test(
+      'does not auto-approve when timeout is null (resolves on decision)',
+      () async {
+        final gate = makeGate();
+        final resultFuture = service.waitForDecision(
+          workspace.root.path,
+          gate: gate,
+          heartbeat: () {},
+          pollInterval: const Duration(milliseconds: 20),
+          // timeout: null → infinite wait
+        );
 
-      await Future<void>.delayed(const Duration(milliseconds: 80));
-      // Should still be waiting — write approval now.
-      service.submitDecision(
-        workspace.root.path,
-        decision: HitlDecisionType.approve,
-      );
+        await Future<void>.delayed(const Duration(milliseconds: 80));
+        // Should still be waiting — write approval now.
+        service.submitDecision(
+          workspace.root.path,
+          decision: HitlDecisionType.approve,
+        );
 
-      final result = await resultFuture;
-      expect(result.type, HitlDecisionType.approve);
-      expect(result.approved, isTrue);
-    });
+        final result = await resultFuture;
+        expect(result.type, HitlDecisionType.approve);
+        expect(result.approved, isTrue);
+      },
+    );
   });
 
   group('gate file format', () {
@@ -300,7 +298,7 @@ void main() {
   group('heartbeat callback', () {
     test('heartbeat is called on each poll iteration', () async {
       var heartbeatCount = 0;
-      final gate = _makeGate();
+      final gate = makeGate();
       final resultFuture = service.waitForDecision(
         workspace.root.path,
         gate: gate,
@@ -326,7 +324,7 @@ void main() {
     });
 
     test('succeeds when gate is open', () async {
-      final gate = _makeGate();
+      final gate = makeGate();
       final resultFuture = service.waitForDecision(
         workspace.root.path,
         gate: gate,

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:genaisys/core/agents/agent_runner.dart';
 import 'package:genaisys/core/models/review_bundle.dart';
 import 'package:genaisys/core/models/task.dart';
@@ -77,44 +77,39 @@ void main() {
     // -----------------------------------------------------------------------
     // 2. Semantic diff → QG IS reached (control test)
     // -----------------------------------------------------------------------
-    test(
-      'semantic diff: QG is reached and passes (control test)',
-      () async {
-        final calls = <String>[];
-        // Same changed paths before and after format — semantic change persists.
-        final git = FakeGitService(
-          changedPathsValue: ['lib/core/feature.dart'],
-        );
-        final runner = _TrackingBuildTestRunnerService(calls);
-        final pipeline = TaskPipelineService(
-          specAgentService: _AlwaysOkSpecAgent(calls),
-          codingAgentService: _AlwaysOkCodingAgent(calls),
-          reviewAgentService: _AlwaysApproveReviewAgent(calls),
-          reviewBundleService: _FakeBundle(calls),
-          buildTestRunnerService: runner,
-          gitService: git,
-        );
+    test('semantic diff: QG is reached and passes (control test)', () async {
+      final calls = <String>[];
+      // Same changed paths before and after format — semantic change persists.
+      final git = FakeGitService(changedPathsValue: ['lib/core/feature.dart']);
+      final runner = _TrackingBuildTestRunnerService(calls);
+      final pipeline = TaskPipelineService(
+        specAgentService: _AlwaysOkSpecAgent(calls),
+        codingAgentService: _AlwaysOkCodingAgent(calls),
+        reviewAgentService: _AlwaysApproveReviewAgent(calls),
+        reviewBundleService: _FakeBundle(calls),
+        buildTestRunnerService: runner,
+        gitService: git,
+      );
 
-        final root = _createRoot();
-        final result = await pipeline.run(
-          root,
-          codingPrompt: 'Add feature',
-          testSummary: 'All tests passed',
-        );
+      final root = _createRoot();
+      final result = await pipeline.run(
+        root,
+        codingPrompt: 'Add feature',
+        testSummary: 'All tests passed',
+      );
 
-        expect(
-          result.review,
-          isNotNull,
-          reason: 'Semantic diff must reach review agent',
-        );
-        expect(result.review!.decision, ReviewDecision.approve);
-        expect(
-          calls,
-          contains('quality'),
-          reason: 'QG must be reached for semantic diff',
-        );
-      },
-    );
+      expect(
+        result.review,
+        isNotNull,
+        reason: 'Semantic diff must reach review agent',
+      );
+      expect(result.review!.decision, ReviewDecision.approve);
+      expect(
+        calls,
+        contains('quality'),
+        reason: 'QG must be reached for semantic diff',
+      );
+    });
 
     // -----------------------------------------------------------------------
     // 3. Format-only drift WITHOUT auto-format clearing → QG reached → reject
@@ -291,6 +286,7 @@ class _AlwaysOkSpecAgent extends SpecAgentService {
     bool overwrite = false,
     String? guidanceContext,
   }) async {
+    _calls.add('spec');
     return SpecAgentResult(
       path: '/tmp/${kind.name}.md',
       kind: kind,
@@ -305,8 +301,7 @@ class _AlwaysOkSpecAgent extends SpecAgentService {
     String projectRoot, {
     required String requirement,
     required String diffSummary,
-  }) async =>
-      const AcSelfCheckResult(passed: true, skipped: false);
+  }) async => const AcSelfCheckResult(passed: true, skipped: false);
 }
 
 class _AlwaysOkCodingAgent extends CodingAgentService {
